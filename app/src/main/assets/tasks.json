@@ -1,0 +1,40 @@
+[
+  {
+    "id": "t1",
+    "plantId": "p1",
+    "type": "WATER",
+    "isRepeating": true,
+    "startDate": "2025-12-01",
+    "intervalDays": 3,
+    "time": "09:00",
+    "completedDates": ["2025-12-08"]
+  },
+  {
+    "id": "t2",
+    "plantId": "p1",
+    "type": "REPOT",
+    "isRepeating": false,
+    "date": "2025-12-11",
+    "time": "12:00",
+    "completedDates": []
+  },
+  {
+    "id": "t3",
+    "plantId": "p2",
+    "type": "WATER",
+    "isRepeating": true,
+    "startDate": "2025-12-05",
+    "intervalDays": 4,
+    "time": "10:00",
+    "completedDates": []
+  },
+  {
+    "id": "t4",
+    "plantId": "p3",
+    "type": "LIGHT",
+    "isRepeating": false,
+    "date": "2025-12-12",
+    "time": "18:30",
+    "completedDates": []
+  }
+]

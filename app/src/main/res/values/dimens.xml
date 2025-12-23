@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="screen_hpad">30dp</dimen>
+    <dimen name="block_gap">12dp</dimen>
+    <dimen name="card_radius">16dp</dimen>
+    <dimen name="card_pad">14dp</dimen>
+    <dimen name="avatar_size">44dp</dimen>
+    <dimen name="plant_image_size">56dp</dimen>
+</resources>

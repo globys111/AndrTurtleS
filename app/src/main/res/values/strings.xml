@@ -1,3 +1,56 @@
 <resources>
-    <string name="app_name">Plant_App_AndrTurtleS</string>
+    <string name="app_name">Plant App</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_day">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_night">Доброй ночи</string>
+
+    <!-- Bottom navigation -->
+    <string name="tasks_title">Задачи</string>
+    <string name="plants_title">Растения</string>
+    <string name="home_title">Главная</string>
+    <string name="articles_title">Статьи</string>
+    <string name="community_title">Сообщество</string>
+
+    <!-- Home -->
+    <string name="no_tasks">На этот день задач нет</string>
+    <string name="today_badge">Сегодня</string>
+    <string name="done_tasks_subtitle">задач выполнено</string>
+    <string name="today_word">сегодня</string>
+
+    <!-- Task types -->
+    <string name="task_water">Полив</string>
+    <string name="task_repot">Пересадка</string>
+    <string name="task_light">Освещение</string>
+
+    <!-- Common states -->
+    <string name="loading">Загрузка…</string>
+    <string name="error_title">Что-то пошло не так</string>
+    <string name="retry">Повторить</string>
+
+    <!-- Profile (если используешь) -->
+    <string name="profile_edit">Редактировать профиль</string>
+
+    <string name="section_general">Общие параметры</string>
+    <string name="section_system">Системные параметры</string>
+    <string name="section_more">Дополнительная информация</string>
+
+    <string name="action_account">Аккаунт</string>
+    <string name="action_notifications">Уведомления</string>
+    <string name="action_privacy">Приватность</string>
+
+    <string name="action_language">Язык</string>
+    <string name="action_theme">Тема</string>
+    <string name="action_permissions">Разрешения</string>
+
+    <string name="action_reviews">Отзывы</string>
+    <string name="action_faq">Частые вопросы</string>
+    <string name="action_policy">Политика использования</string>
+
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="delete_account">Удалить аккаунт</string>
+
+    <string name="plant_details_title">О растении</string>
 </resources>

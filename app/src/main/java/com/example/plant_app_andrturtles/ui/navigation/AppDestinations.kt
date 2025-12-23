@@ -1,0 +1,12 @@
+package com.example.plant_app_andrturtles.ui.navigation
+
+sealed class AppRoute(val route: String) {
+    data object Tasks : AppRoute("tasks")
+    data object Plants : AppRoute("plants")
+    data object Home : AppRoute("home")
+    data object Articles : AppRoute("articles")
+    data object Community : AppRoute("community")
+
+    data object Profile : AppRoute("profile")
+    data object PlantDetails : AppRoute("plant_details")
+}
