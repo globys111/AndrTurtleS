@@ -6,15 +6,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.*
+import com.example.plant_app_andrturtles.R
 import com.example.plant_app_andrturtles.ui.navigation.*
 import com.example.plant_app_andrturtles.ui.screens.*
 import com.example.plant_app_andrturtles.domain.model.Plant
 import com.example.plant_app_andrturtles.ui.screens.home.HomeScreen
+import com.example.plant_app_andrturtles.ui.screens.plants.PlaceholderScreen
+import com.example.plant_app_andrturtles.ui.screens.plants.PlantDetailsScreen
+import com.example.plant_app_andrturtles.ui.screens.plants.PlantsScreen
 
 @Composable
 fun AppRoot() {
@@ -28,7 +33,7 @@ fun AppRoot() {
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
-                    containerColor = androidx.compose.ui.graphics.Color(0xFFE9EED9)
+                    containerColor = Color(0xFFE9EED9)
                 ) {
                     bottomItems.forEach { item ->
                         NavigationBarItem(
@@ -70,7 +75,6 @@ fun AppRoot() {
                 HomeScreen(
                     onOpenProfile = { navController.navigate(AppRoute.Profile.route) },
                     onOpenPlant = { plant ->
-                        // Parcelable передача через SavedStateHandle
                         navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
                         navController.navigate(AppRoute.PlantDetails.route)
                     }
@@ -88,15 +92,35 @@ fun AppRoot() {
 
                 PlantDetailsScreen(
                     plant = plant,
-                    onBack = { navController.popBackStack() }
+                    onBack = {
+                        navController.currentBackStackEntry?.savedStateHandle?.remove<Plant>("plant")
+                        navController.popBackStack()
+                    },
+                    onEdit = {}
                 )
             }
 
-            // заглушки для нижних вкладок (чтобы BottomNav работал как в макете)
-            composable(AppRoute.Tasks.route) { PlaceholderScreen(titleRes = com.example.plant_app_andrturtles.R.string.tasks_title) }
-            composable(AppRoute.Plants.route) { PlaceholderScreen(titleRes = com.example.plant_app_andrturtles.R.string.plants_title) }
-            composable(AppRoute.Articles.route) { PlaceholderScreen(titleRes = com.example.plant_app_andrturtles.R.string.articles_title) }
-            composable(AppRoute.Community.route) { PlaceholderScreen(titleRes = com.example.plant_app_andrturtles.R.string.community_title) }
+            composable(AppRoute.Tasks.route) {
+                PlaceholderScreen(titleRes = R.string.tasks_title)
+            }
+
+            composable(AppRoute.Plants.route) {
+                PlantsScreen(
+                    onPlantClick = { plant ->
+                        navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
+                        navController.navigate(AppRoute.PlantDetails.route)
+                    },
+                    onAddPlant = {}
+                )
+            }
+
+            composable(AppRoute.Articles.route) {
+                PlaceholderScreen(titleRes = R.string.articles_title)
+            }
+
+            composable(AppRoute.Community.route) {
+                PlaceholderScreen(titleRes = R.string.community_title)
+            }
         }
     }
 }

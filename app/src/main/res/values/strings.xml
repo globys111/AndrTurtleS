@@ -53,4 +53,25 @@
     <string name="delete_account">Удалить аккаунт</string>
 
     <string name="plant_details_title">О растении</string>
+
+    <string name="search_hint">Поиск растений...</string>
+    <string name="loading_plants">Загружаем растения...</string>
+    <string name="no_plants">Нет растений</string>
+    <string name="no_plants_found">Растения не найдены</string>
+    <string name="add_plant">Добавить растение</string>
+    <string name="plants">растения</string>
+    <string name="filter_button">Фильтр</string>
+    <string name="edit_button">Редактировать</string>
+
+    <string name="view_care">Уход</string>
+    <string name="view_description">Описание</string>
+
+    <string name="recently_planted">Недавно посажено</string>
+    <string name="one_month">1 месяц</string>
+    <string name="months_2_to_4">%d месяца</string>
+    <string name="months_5_to_11">%d месяцев</string>
+    <string name="one_year">1 год</string>
+    <string name="years_2_to_4">%d года</string>
+    <string name="years_more_than_1">%d лет</string>
+    <string name="unknown_age">Неизвестный возраст</string>
 </resources>
