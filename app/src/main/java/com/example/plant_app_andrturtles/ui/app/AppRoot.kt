@@ -127,8 +127,8 @@ fun AppRoot() {
                 )
             }
 
-            composable(AppRoute.ArticleDetails.route) { backStackEntry ->
-                val article = backStackEntry.savedStateHandle.get<Article>("article")
+            composable(AppRoute.ArticleDetails.route) {
+                val article = navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
                 ArticleDetailsScreen(
                     article = article,
                     onBack = { navController.popBackStack() }

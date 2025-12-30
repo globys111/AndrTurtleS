@@ -142,6 +142,6 @@ private fun getDrawableResourceId(imageName: String): Int {
         val nameWithoutExtension = imageName.substringBeforeLast(".")
         R.drawable::class.java.getDeclaredField(nameWithoutExtension).getInt(null)
     } catch (e: Exception) {
-        0  // Return 0 if not found, UI will skip displaying
+        0
     }
 }

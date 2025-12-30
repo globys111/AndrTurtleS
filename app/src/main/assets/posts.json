@@ -4,7 +4,7 @@
     "userName": "Вова",
     "avatar": "ic_profile_pic_profile_screen.png",
     "text": "У меня сансевиерия, подскажите, как часто поливать?",
-    "image_name": "pic_plant_3.png",
+    "image_name": "pic_plant_1.png",
     "replies": [
       {
         "id": 4,
@@ -12,15 +12,16 @@
         "avatar": "pic_avatar_2.png",
         "text": "Поливать раз в 10-14 дней, когда почва полностью высохнет.",
         "image_name": null,
-        "replies": []
-      },
-      {
-        "id": 5,
-        "userName": "Вова",
-        "avatar": "pic_avatar_3.png",
-        "text": "Спасибо! А зимой реже?",
-        "image_name": null,
-        "replies": []
+        "replies": [
+          {
+            "id": 5,
+            "userName": "Глеб",
+            "avatar": "pic_avatar_3.png",
+            "text": "Спасибо! А зимой реже?",
+            "image_name": null,
+            "replies": []
+          }
+        ]
       }
     ]
   },
@@ -29,7 +30,7 @@
     "userName": "Ирина",
     "avatar": "pic_avatar_2.png",
     "text": "Кто-нибудь пробовал курс по садоводству?",
-    "image_name": "pic_plant_1.png",
+    "image_name": "pic_plant_2.png",
     "replies": [
       {
         "id": 6,
