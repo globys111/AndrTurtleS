@@ -5,6 +5,8 @@ sealed class AppRoute(val route: String) {
     data object Plants : AppRoute("plants")
     data object Home : AppRoute("home")
     data object Articles : AppRoute("articles")
+
+    data object ArticleDetails : AppRoute("article_details/{articleId}")
     data object Community : AppRoute("community")
 
     data object Profile : AppRoute("profile")

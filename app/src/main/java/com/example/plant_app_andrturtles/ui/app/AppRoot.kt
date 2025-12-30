@@ -20,6 +20,10 @@ import com.example.plant_app_andrturtles.ui.screens.home.HomeScreen
 import com.example.plant_app_andrturtles.ui.screens.plants.PlaceholderScreen
 import com.example.plant_app_andrturtles.ui.screens.plants.PlantDetailsScreen
 import com.example.plant_app_andrturtles.ui.screens.plants.PlantsScreen
+import com.example.plant_app_andrturtles.domain.model.Article
+import com.example.plant_app_andrturtles.ui.screens.articles.ArticlesScreen
+import com.example.plant_app_andrturtles.ui.screens.articles.ArticleDetailsScreen
+import com.example.plant_app_andrturtles.ui.screens.community.CommunityScreen
 
 @Composable
 fun AppRoot() {
@@ -115,11 +119,24 @@ fun AppRoot() {
             }
 
             composable(AppRoute.Articles.route) {
-                PlaceholderScreen(titleRes = R.string.articles_title)
+                ArticlesScreen(
+                    onArticleClick = { article ->
+                        navController.currentBackStackEntry?.savedStateHandle?.set("article", article)
+                        navController.navigate(AppRoute.ArticleDetails.route)
+                    }
+                )
+            }
+
+            composable(AppRoute.ArticleDetails.route) { backStackEntry ->
+                val article = backStackEntry.savedStateHandle.get<Article>("article")
+                ArticleDetailsScreen(
+                    article = article,
+                    onBack = { navController.popBackStack() }
+                )
             }
 
             composable(AppRoute.Community.route) {
-                PlaceholderScreen(titleRes = R.string.community_title)
+                CommunityScreen()
             }
         }
     }

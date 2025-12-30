@@ -74,4 +74,12 @@
     <string name="years_2_to_4">%d года</string>
     <string name="years_more_than_1">%d лет</string>
     <string name="unknown_age">Неизвестный возраст</string>
+
+    <string name="no_articles">Нет статей</string>
+    <string name="error_loading">Ошибка загрузки</string>
+    <string name="search_articles">Поиск...</string>
+    <string name="article_author">Автор: %s</string>
+    <string name="article_rating">Рейтинг: %.1f</string>
+    <string name="loading_posts">Загрузка публикаций...</string>
+    <string name="no_posts">Нет публикаций</string>
 </resources>

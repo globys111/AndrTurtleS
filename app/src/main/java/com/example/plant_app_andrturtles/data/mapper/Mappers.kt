@@ -3,6 +3,8 @@ package com.example.plant_app_andrturtles.data.mapper
 import com.example.plant_app_andrturtles.data.dto.PlantDto
 import com.example.plant_app_andrturtles.data.dto.TaskDto
 import com.example.plant_app_andrturtles.data.dto.UserDto
+import com.example.plant_app_andrturtles.data.dto.ArticleDto
+import com.example.plant_app_andrturtles.data.dto.PostDto
 import com.example.plant_app_andrturtles.domain.model.*
 import java.time.LocalDate
 import java.time.LocalTime
@@ -25,3 +27,21 @@ fun TaskDto.toDomain(): TaskDefinition {
         completedDates = completedDates.map(LocalDate::parse).toSet()
     )
 }
+
+fun ArticleDto.toDomain(): Article = Article(
+    id = id,
+    title = title,
+    content = content,
+    imageName = imageName,
+    rating = rating,
+    author = author
+)
+
+fun PostDto.toDomain(): Post = Post(
+    id = id,
+    userName = userName,
+    avatar = avatar,
+    text = text,
+    imageName = imageName,
+    replies = replies?.map { it.toDomain() } ?: emptyList()
+)
