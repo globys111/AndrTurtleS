@@ -10,7 +10,7 @@ data class TaskDto(
     val isRepeating: Boolean,
     val startDate: String? = null,   // yyyy-MM-dd
     val intervalDays: Int? = null,
-    val date: String? = null,        // yyyy-MM-dd (для одноразовой)
+    val date: String? = null,        // yyyy-MM-dd
     val time: String,                // HH:mm
     val completedDates: List<String> = emptyList() // yyyy-MM-dd
 )

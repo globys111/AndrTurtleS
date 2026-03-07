@@ -69,7 +69,6 @@ fun HomeScreen(
                 val greeting = stringResource(greetingRes(LocalTime.now()))
 
                 val days = remember(data.selectedDate) {
-                    // 7 дней вокруг выбранной даты (как в макете — 7 элементов)
                     (-3..3).map { data.selectedDate.plusDays(it.toLong()) }
                 }
 
