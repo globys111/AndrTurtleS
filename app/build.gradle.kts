@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.plant_app_andrturtles"
+    namespace = "com.rebloom.app"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.plant_app_andrturtles"
+        applicationId = "com.rebloom.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
