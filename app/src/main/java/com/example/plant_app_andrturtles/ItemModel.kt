@@ -1,4 +1,6 @@
 package com.example.plant_app_andrturtles
 
-class ItemModel {
-}
+data class ItemModel(
+    val id: Int,
+    val imageResId: Int
+)
