@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 sealed class UiState {
+
+
     object Loading : UiState()
     data class Success(val items: List<ItemModel>) : UiState()
     data class Error(val message: String) : UiState()

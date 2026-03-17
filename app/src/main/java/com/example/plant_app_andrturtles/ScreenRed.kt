@@ -28,14 +28,14 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun ScrollScreen(
-    onOverdueClick: () -> Unit,
-    viewModel: ScrollScreenViewModel = viewModel()) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+fun ScrollScreenRed(
+    onBackClick: () -> Unit,
+    viewModel: ScrollScreenViewModelRed = viewModel()) {
+    val uiStateRed by viewModel.uiStateRed.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableStateOf(0) }
 
-    when (val state = uiState) {
-        is UiState.Loading -> {
+    when (val state = uiStateRed) {
+        is UiStateRed.Loading -> {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -46,11 +46,11 @@ fun ScrollScreen(
             }
         }
 
-        is UiState.Success -> {
+        is UiStateRed.Success -> {
             Column(Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()))
-                {
+            {
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -98,7 +98,7 @@ fun ScrollScreen(
                         modifier = Modifier
                             .weight(1f)
                             .background(
-                                Color(0xFFCBD2A4),
+                                Color.White,
                                 RoundedCornerShape(16.dp)
                             )
                             .padding(12.dp),
@@ -111,13 +111,10 @@ fun ScrollScreen(
                         modifier = Modifier
                             .weight(1f)
                             .background(
-                                Color.White,
+                                Color(0xFFE9EED9),
                                 RoundedCornerShape(16.dp)
                             )
-                            .padding(12.dp)
-                            .clickable{
-                                onOverdueClick()
-                            },
+                            .padding(12.dp),
                         Color.Black,
                         textAlign = TextAlign.Center
                     )
@@ -147,35 +144,10 @@ fun ScrollScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp
-                    )
-                }
-                Row(
-                    Modifier
-                        .background(Color(0xFFE9EED9))
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text(
-                        text = "Валентин",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
                         color = Color.Black,
                         textAlign = TextAlign.Left,
                         fontSize = 20.sp
                     )
-                }
-
-                LazyColumn(
-                    Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(state.items) { item ->
-                        ItemCard(item)
-                    }
                 }
 
                 Row(
@@ -201,14 +173,14 @@ fun ScrollScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(state.items) { item ->
-                        ItemCard(item)
+                        ItemCardRed(item)
                     }
                 }
 
             }
         }
 
-        is UiState.Error -> {
+        is UiStateRed.Error -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -223,12 +195,12 @@ fun ScrollScreen(
 }
 
 @Composable
-fun ItemCard(item: ItemModel) {
+fun ItemCardRed(item: ItemModel) {
     Row(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Image(
             painter = painterResource(id = item.imageResId),
             contentDescription = null,
@@ -237,14 +209,13 @@ fun ItemCard(item: ItemModel) {
                 .clip(MaterialTheme.shapes.small),
             contentScale = ContentScale.Crop
         )
-
         Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 8.dp)
         ) {
             Text(
-                text = item.move,  // ← Проверь: item.title, а не item.move
+                text = item.move,  // ← Исправлено с item.move
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -253,11 +224,11 @@ fun ItemCard(item: ItemModel) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            Checkbox(
-                checked = false,
-                onCheckedChange = { }
-            )
         }
+
+        Checkbox(
+            checked = false,
+            onCheckedChange = { }
+        )
     }
 }

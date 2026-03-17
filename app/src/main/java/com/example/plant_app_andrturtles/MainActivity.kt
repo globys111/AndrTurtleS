@@ -3,25 +3,19 @@ package com.example.plant_app_andrturtles
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import com.example.plant_app_andrturtles.ui.theme.Plant_App_AndrTurtleSTheme
+import androidx.navigation.compose.rememberNavController
+import com.example.plant_app_andrturtles.navigation.AppNavHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            Plant_App_AndrTurtleSTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ScrollScreen()
+            MaterialTheme {
+                Surface {
+                    val navController = rememberNavController()
+                    AppNavHost(navController = navController)
                 }
             }
         }
