@@ -136,7 +136,7 @@ fun CalendarAndTasksCard(
                     TaskRow(
                         task = t,
                         plant = plantById(t.plantId),
-                        badgeText = if (!t.isCompleted && t.status == TaskStatus.TODAY) stringResource(R.string.today_badge) else null
+                        badgeText = if (!t.isCompleted && t.status == TaskStatus.TODAY) null else null
                     )
                 }
             }
