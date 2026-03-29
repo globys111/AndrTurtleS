@@ -15,6 +15,8 @@ import androidx.navigation.compose.*
 import com.example.plant_app_andrturtles.R
 import com.example.plant_app_andrturtles.ui.navigation.*
 import com.example.plant_app_andrturtles.ui.screens.*
+import com.example.plant_app_andrturtles.ui.screens.auth.AuthScreen
+import com.example.plant_app_andrturtles.ui.screens.auth.RegisterScreen
 import com.example.plant_app_andrturtles.domain.model.Plant
 import com.example.plant_app_andrturtles.ui.screens.home.HomeScreen
 import com.example.plant_app_andrturtles.ui.screens.plants.PlaceholderScreen
@@ -27,11 +29,11 @@ fun AppRoot() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val current = navBackStackEntry?.destination?.route
 
-    val showBottomBar = current in bottomItems.map { it.route }
+    var isLoggedIn by remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) {
+            if (isLoggedIn && current in bottomItems.map { it.route }) {
                 NavigationBar(
                     containerColor = Color(0xFFE9EED9)
                 ) {
@@ -68,9 +70,40 @@ fun AppRoot() {
     ) { padding ->
         NavHost(
             navController = navController,
-            startDestination = AppRoute.Home.route,
+            startDestination = if (isLoggedIn) AppRoute.Home.route else "auth",
             modifier = Modifier.padding(padding)
         ) {
+            composable("auth") {
+                AuthScreen(
+                    onLoginSuccess = {
+                        isLoggedIn = true
+                        navController.navigate(AppRoute.Home.route) {
+                            popUpTo("auth") { inclusive = true }
+                        }
+                    },
+                    onNavigateToRegister = {
+                        navController.navigate("register")
+                    },
+                    onNavigateToForgotPassword = {
+                        // TODO: добавить экран восстановления пароля
+                    }
+                )
+            }
+
+            composable("register") {
+                RegisterScreen(
+                    onRegisterSuccess = {
+                        isLoggedIn = true
+                        navController.navigate(AppRoute.Home.route) {
+                            popUpTo("auth") { inclusive = true }
+                        }
+                    },
+                    onNavigateToLogin = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
             composable(AppRoute.Home.route) {
                 HomeScreen(
                     onOpenProfile = { navController.navigate(AppRoute.Profile.route) },
@@ -90,14 +123,20 @@ fun AppRoot() {
                     ?.savedStateHandle
                     ?.get<Plant>("plant")
 
-                PlantDetailsScreen(
-                    plant = plant,
-                    onBack = {
-                        navController.currentBackStackEntry?.savedStateHandle?.remove<Plant>("plant")
+                if (plant != null) {
+                    PlantDetailsScreen(
+                        plant = plant,
+                        onBack = {
+                            navController.currentBackStackEntry?.savedStateHandle?.remove<Plant>("plant")
+                            navController.popBackStack()
+                        },
+                        onEdit = {}
+                    )
+                } else {
+                    LaunchedEffect(Unit) {
                         navController.popBackStack()
-                    },
-                    onEdit = {}
-                )
+                    }
+                }
             }
 
             composable(AppRoute.Tasks.route) {

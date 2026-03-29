@@ -74,4 +74,14 @@
     <string name="years_2_to_4">%d года</string>
     <string name="years_more_than_1">%d лет</string>
     <string name="unknown_age">Неизвестный возраст</string>
+
+    <string name="auth_sign_in">Войти</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_forgot_password">Забыли пароль?</string>
+    <string name="auth_no_account">Нет аккаунта?</string>
+    <string name="auth_register">Зарегистрироваться</string>
+    <string name="auth_welcome">Добро пожаловать</string>
+    <string name="auth_login_success">Вход выполнен успешно</string>
+    <string name="auth_login_error">Ошибка входа. Проверьте email и пароль</string>
 </resources>
