@@ -104,7 +104,11 @@ fun AppRoot() {
             }
 
             composable(AppRoute.Tasks.route) {
-                TasksScreen(titleRes = R.string.tasks_title)
+                TasksScreen(
+                    onOverdueClick = {
+
+                    }
+                )
             }
 
             composable(AppRoute.Plants.route) {
