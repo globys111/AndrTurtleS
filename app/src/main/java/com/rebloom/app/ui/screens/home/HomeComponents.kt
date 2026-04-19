@@ -31,6 +31,12 @@ import com.rebloom.app.domain.model.Plant
 import com.rebloom.app.domain.model.TaskOccurrence
 import com.rebloom.app.domain.model.TaskStatus
 import com.rebloom.app.domain.model.TaskType
+import com.rebloom.app.ui.theme.GreenFrame
+import com.rebloom.app.ui.theme.HomeCounterTasks
+import com.rebloom.app.ui.theme.HomeFramePicture
+import com.rebloom.app.ui.theme.HomeTextDay
+import com.rebloom.app.ui.theme.HomeTextDow
+import com.rebloom.app.ui.theme.TaskisEmpty
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
@@ -92,7 +98,7 @@ fun CalendarAndTasksCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFFE9EED9))
+            .background(GreenFrame)
             .padding(vertical = 10.dp)
     ) {
         Text(
@@ -125,7 +131,7 @@ fun CalendarAndTasksCard(
             Text(
                 text = emptyText,
                 fontSize = 14.sp,
-                color = Color(0x99242823),
+                color = TaskisEmpty,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -175,8 +181,8 @@ private fun DayChip(
                 .clickable { onClick() },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = dow, fontSize = 20.sp, color = Color(0xFF416946))
-            Text(text = day, fontSize = 20.sp, color = Color(0xFF242823))
+            Text(text = dow, fontSize = 20.sp, color = HomeTextDow)
+            Text(text = day, fontSize = 20.sp, color = HomeTextDay)
         }
     }
 }
@@ -215,7 +221,7 @@ private fun TaskRow(
                             .offset(y = (-2).dp)
                             .size(width = 42.dp, height = 13.dp)
                             .clip(RoundedCornerShape(999.dp))
-                            .background(Color(0xFF618262)),
+                            .background(Color.Black),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = badgeText, fontSize = 10.sp, color = Color.White)
@@ -265,14 +271,14 @@ fun DoneTodayAndMascot(
             Text(
                 text = "$done/$total",
                 fontSize = 48.sp,
-                color = Color(0xFF618262),
+                color = HomeCounterTasks,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
             Text(
                 text = stringResource(R.string.done_tasks_subtitle),
                 fontSize = 16.sp,
-                color = Color(0xFF416946),
+                color = HomeTextDow,
                 modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
             Text(
@@ -336,7 +342,7 @@ private fun PlantCard(
             .fillMaxWidth()
             .height(111.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFFE9EED9))
+            .background(HomeFramePicture)
             .clickable { onClick() }
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -387,7 +393,7 @@ private fun PlantCard(
                                     .offset(y = (-2).dp)
                                     .size(width = 42.dp, height = 13.dp)
                                     .clip(RoundedCornerShape(999.dp))
-                                    .background(Color(0xFF618262)),
+                                    .background(HomeCounterTasks),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(text = stringResource(R.string.today_badge), fontSize = 10.sp, color = Color.White)

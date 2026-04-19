@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.rebloom.app.data.repository.TaskRepository
 import com.rebloom.app.domain.model.TaskDefinition
 import com.rebloom.app.ui.common.UiState
+import com.rebloom.app.ui.theme.ErrorLoading
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +30,7 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
                 val tasks = repository.loadTaskDefinitions()
                 _uiState.value = UiState.Success(tasks)
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Ошибка загрузки задач")
+                _uiState.value = UiState.Error(e.message ?: ErrorLoading)
             }
         }
     }

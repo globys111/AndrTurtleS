@@ -20,6 +20,12 @@ import com.rebloom.app.R
 import com.rebloom.app.domain.model.TaskDefinition
 import com.rebloom.app.domain.model.TaskType
 import com.rebloom.app.ui.common.UiState
+import com.rebloom.app.ui.theme.HomeFramePicture
+import com.rebloom.app.ui.theme.Lighting
+import com.rebloom.app.ui.theme.Tasks
+import com.rebloom.app.ui.theme.TasksChooseBotton
+import com.rebloom.app.ui.theme.Transplanting
+import com.rebloom.app.ui.theme.Watering
 
 @Composable
 fun TasksScreen(
@@ -57,7 +63,6 @@ fun TasksScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Фильтры
                 item {
                     Row(
                         Modifier
@@ -72,7 +77,7 @@ fun TasksScreen(
                             label = { Text("Список") },
                             modifier = Modifier.weight(1f),
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFFCBD2A4)
+                                selectedContainerColor = TasksChooseBotton
                             )
                         )
                         FilterChip(
@@ -92,7 +97,7 @@ fun TasksScreen(
 
                 item {
                     Text(
-                        text = "Задачи:",
+                        text = Tasks,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 24.dp, top = 8.dp, bottom = 4.dp),
@@ -117,7 +122,7 @@ fun TaskCard(task: TaskDefinition) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE9EED9))
+        colors = CardDefaults.cardColors(containerColor = HomeFramePicture)
     ) {
         Row(
             modifier = Modifier
@@ -143,21 +148,15 @@ fun TaskCard(task: TaskDefinition) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Растение ID: ${task.plantId}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    //text = "Каждые ${task.intervalDays} дня",
+                    text = "Каждые 3 дня",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
-                if (task.isRepeating) {
-                    Text(
-                        text = "Каждые ${task.intervalDays} дней",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-                }
             }
 
             Checkbox(
-                checked = false,
+                checked = true,
                 onCheckedChange = {}
             )
         }
@@ -165,9 +164,9 @@ fun TaskCard(task: TaskDefinition) {
 }
 
 fun TaskType.toTitle(): String = when (this) {
-    TaskType.WATER -> "Полив"
-    TaskType.REPOT -> "Пересадка"
-    TaskType.LIGHT -> "Освещение"
+    TaskType.WATER -> Watering
+    TaskType.REPOT -> Transplanting
+    TaskType.LIGHT -> Lighting
 }
 
 fun TaskType.toIconRes(): Int = when (this) {
