@@ -82,4 +82,52 @@
     <string name="article_rating">Рейтинг: %.1f</string>
     <string name="loading_posts">Загрузка публикаций...</string>
     <string name="no_posts">Нет публикаций</string>
+
+    <string name="auth_login_title">Вход</string>
+    <string name="auth_login_subtitle">Войдите в свой аккаунт</string>
+    <string name="auth_email">Электронная почта</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_forgot_password">Забыли пароль?</string>
+    <string name="auth_login_button">Войти</string>
+    <string name="auth_no_account">Нет аккаунта?</string>
+    <string name="auth_register_button">Зарегистрироваться</string>
+    <string name="auth_or_login_with">или войти с помощью</string>
+    <string name="auth_social_vk">Вход через ВКонтакте</string>
+    <string name="auth_social_google">Вход через Google</string>
+    <string name="auth_social_more">Другие способы</string>
+
+    <string name="auth_register_title">Регистрация</string>
+    <string name="auth_register_subtitle">Создайте аккаунт</string>
+    <string name="auth_confirm_password">Повторить пароль</string>
+    <string name="auth_register_button_text">Зарегистрироваться</string>
+    <string name="auth_have_account">Есть аккаунт?</string>
+    <string name="auth_sign_in_button">Войти</string>
+    <string name="auth_or_register_with">или зарегистрироваться с помощью</string>
+
+    <string name="error_email_empty">Введите email</string>
+    <string name="error_email_invalid">Введите корректный email</string>
+    <string name="error_password_empty">Введите пароль</string>
+    <string name="error_password_too_short">Пароль должен содержать минимум 6 символов</string>
+    <string name="error_password_mismatch">Пароли не совпадают</string>
+    <string name="error_login_failed">Неверный email или пароль</string>
+    <string name="error_test_data_hint">Тестовые данные:\ntest@mail.com\n123456</string>
+
+    <string name="success_login">Вход выполнен успешно!</string>
+    <string name="success_register">Регистрация успешна!</string>
+
+    <string name="social_vk">VK</string>
+    <string name="social_google">Google</string>
+    <string name="social_more">Еще</string>
+
+    <string name="hide_password">Скрыть пароль</string>
+    <string name="show_password">Показать пароль</string>
+
+    <string name="forgot_password_title">Восстановление пароля</string>
+    <string name="forgot_password_subtitle">Введите ваш email, и мы отправим инструкции по восстановлению</string>
+    <string name="forgot_password_email">Email</string>
+    <string name="forgot_password_button">Отправить</string>
+    <string name="forgot_password_back_to_login">Вернуться ко входу</string>
+    <string name="forgot_password_success">Инструкции по восстановлению отправлены на вашу почту</string>
+    <string name="forgot_password_error_email_empty">Введите email</string>
+    <string name="forgot_password_error_email_invalid">Введите корректный email</string>
 </resources>
