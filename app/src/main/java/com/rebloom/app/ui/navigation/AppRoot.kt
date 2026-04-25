@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
-import com.rebloom.app.R
 import com.rebloom.app.domain.model.Article
 import com.rebloom.app.domain.model.Plant
 import com.rebloom.app.ui.screens.articles.ArticleDetailsScreen
@@ -45,21 +44,19 @@ fun AppRoot() {
         }
     }
 
-    val startDestination = if (isLoggedIn) AppRoute.Home.route else "auth"
-    val showBottomBar = isLoggedIn && current in bottomItems.map { it.route }
+    val startDestination = if (isLoggedIn) MAIN_ROUTE else AUTH_ROUTE
+    val showBottomBar = current in bottomItems.map { it.route }
 
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar(
-                    containerColor = Color(0xFFE9EED9)
-                ) {
+                NavigationBar(containerColor = Color(0xFFE9EED9)) {
                     bottomItems.forEach { item ->
                         NavigationBarItem(
                             selected = current == item.route,
                             onClick = {
                                 navController.navigate(item.route) {
-                                    popUpTo(AppRoute.Home.route) { saveState = true }
+                                    popUpTo(MainDestinations.Home.route) { saveState = true }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -90,126 +87,119 @@ fun AppRoot() {
             startDestination = startDestination,
             modifier = Modifier.padding(padding)
         ) {
-            composable("auth") {
-                LoginScreen(
-                    onLoginSuccess = {
-                        isLoggedIn = true
-                        navController.navigate(AppRoute.Home.route) {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    },
-                    onNavigateToRegister = {
-                        navController.navigate("register")
-                    },
-                    onNavigateToForgotPassword = {
-                        navController.navigate("forgot_password")
-                    },
-                    viewModel = authViewModel
-                )
-            }
+            // ── Auth Graph ───────────────────────────────────────────────
+            navigation(startDestination = AuthDestinations.Login.route, route = AUTH_ROUTE) {
 
-            composable("register") {
-                RegisterScreen(
-                    onRegisterSuccess = {
-                        isLoggedIn = true
-                        navController.navigate(AppRoute.Home.route) {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    },
-                    onNavigateToLogin = {
-                        navController.popBackStack()
-                    },
-                    viewModel = authViewModel
-                )
-            }
-
-            composable("forgot_password") {
-                ForgotPasswordScreen(
-                    onNavigateToLogin = {
-                        navController.popBackStack()
-                    },
-                    viewModel = authViewModel
-                )
-            }
-
-            composable(AppRoute.Home.route) {
-                HomeScreen(
-                    onOpenProfile = { navController.navigate(AppRoute.Profile.route) },
-                    onOpenPlant = { plant ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
-                        navController.navigate(AppRoute.PlantDetails.route)
-                    }
-                )
-            }
-
-            composable(AppRoute.Profile.route) {
-                ProfileScreen(onBack = { navController.popBackStack() })
-            }
-
-            composable(AppRoute.PlantDetails.route) {
-                val plant = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<Plant>("plant")
-
-                if (plant != null) {
-                    PlantDetailsScreen(
-                        plant = plant,
-                        onBack = {
-                            navController.currentBackStackEntry?.savedStateHandle?.remove<Plant>("plant")
-                            navController.popBackStack()
+                composable(AuthDestinations.Login.route) {
+                    LoginScreen(
+                        onLoginSuccess = {
+                            isLoggedIn = true
+                            navController.navigate(MAIN_ROUTE) {
+                                popUpTo(AUTH_ROUTE) { inclusive = true }
+                            }
                         },
-                        onEdit = {}
+                        onNavigateToRegister = {
+                            navController.navigate(AuthDestinations.Register.route)
+                        },
+                        onNavigateToForgotPassword = {
+                            navController.navigate(AuthDestinations.ForgotPass.route)
+                        },
+                        viewModel = authViewModel
                     )
-                } else {
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
-                        navController.popBackStack()
-                    }
+                }
+
+                composable(AuthDestinations.Register.route) {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            isLoggedIn = true
+                            navController.navigate(MAIN_ROUTE) {
+                                popUpTo(AUTH_ROUTE) { inclusive = true }
+                            }
+                        },
+                        onNavigateToLogin = { navController.popBackStack() },
+                        viewModel = authViewModel
+                    )
+                }
+
+                composable(AuthDestinations.ForgotPass.route) {
+                    ForgotPasswordScreen(
+                        onNavigateToLogin = { navController.popBackStack() },
+                        viewModel = authViewModel
+                    )
                 }
             }
 
-            composable(AppRoute.Tasks.route) {
-                TasksScreen(
-                    onOverdueClick = {
+            // ── Main Graph ───────────────────────────────────────────────
+            navigation(startDestination = MainDestinations.Home.route, route = MAIN_ROUTE) {
 
-                    }
-                )
-            }
-
-            composable(AppRoute.Plants.route) {
-                PlantsScreen(
-                    onPlantClick = { plant ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
-                        navController.navigate(AppRoute.PlantDetails.route)
-                    },
-                    onAddPlant = {}
-                )
-            }
-
-            composable(AppRoute.Articles.route) {
-                ArticlesScreen(
-                    onArticleClick = { article ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("article", article)
-                        navController.navigate(AppRoute.ArticleDetails.route)
-                    }
-                )
-            }
-
-            composable(AppRoute.ArticleDetails.route) {
-                val article = navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
-                if (article != null) {
-                    ArticleDetailsScreen(
-                        article = article,
-                        onBack = { navController.popBackStack() }
+                composable(MainDestinations.Home.route) {
+                    HomeScreen(
+                        onOpenProfile = { navController.navigate(MainDestinations.Profile.route) },
+                        onOpenPlant = { plant ->
+                            navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
+                            navController.navigate(MainDestinations.PlantDetails.route)
+                        }
                     )
-                } else {
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
-                        navController.popBackStack()
+                }
+
+                composable(MainDestinations.Profile.route) {
+                    ProfileScreen(onBack = { navController.popBackStack() })
+                }
+
+                composable(MainDestinations.PlantDetails.route) {
+                    val plant = remember {
+                        navController.previousBackStackEntry?.savedStateHandle?.get<Plant>("plant")
+                    }
+                    if (plant != null) {
+                        PlantDetailsScreen(
+                            plant = plant,
+                            onBack = {
+                                navController.popBackStack()
+                            },
+                            onEdit = {}
+                        )
+                    } else {
+                        LaunchedEffect(Unit) { navController.popBackStack() }
                     }
                 }
-            }
 
-            composable(AppRoute.Community.route) {
-                CommunityScreen()
+                composable(MainDestinations.Tasks.route) {
+                    TasksScreen(onOverdueClick = {})
+                }
+
+                composable(MainDestinations.Plants.route) {
+                    PlantsScreen(
+                        onPlantClick = { plant ->
+                            navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
+                            navController.navigate(MainDestinations.PlantDetails.route)
+                        },
+                        onAddPlant = {}
+                    )
+                }
+
+                composable(MainDestinations.Articles.route) {
+                    ArticlesScreen(
+                        onArticleClick = { article ->
+                            navController.currentBackStackEntry?.savedStateHandle?.set("article", article)
+                            navController.navigate(MainDestinations.ArticleDetails.route)
+                        }
+                    )
+                }
+
+                composable(MainDestinations.ArticleDetails.route) {
+                    val article = remember {
+                        navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
+                    }
+                    if (article != null) {
+                        ArticleDetailsScreen(article = article, onBack = { navController.popBackStack() })
+                    } else {
+                        LaunchedEffect(Unit) { navController.popBackStack() }
+                    }
+                }
+
+                composable(MainDestinations.Community.route) {
+                    CommunityScreen()
+                }
             }
         }
     }
