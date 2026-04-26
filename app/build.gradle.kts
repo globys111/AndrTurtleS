@@ -71,6 +71,4 @@ dependencies {
 
     implementation(libs.androidx.compose.material.icons.extended)
 
-    implementation("androidx.glance:glance-appwidget:1.1.1")
-
 }
