@@ -80,8 +80,14 @@
     <string name="search_articles">Поиск...</string>
     <string name="article_author">Автор: %s</string>
     <string name="article_rating">Рейтинг: %.1f</string>
-    <string name="loading_posts">Загрузка публикаций...</string>
+    <string name="loading_posts">Загружаем публикации...</string>
     <string name="no_posts">Нет публикаций</string>
+
+    <string name="loading_home">Загружаем главный экран...</string>
+
+    <string name="loading_articles">Загружаем статьи...</string>
+
+    <string name="loading_tasks">Загружаем задачи...</string>
 
     <string name="auth_login_title">Вход</string>
     <string name="auth_login_subtitle">Войдите в свой аккаунт</string>
