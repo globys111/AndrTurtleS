@@ -178,8 +178,7 @@ fun PlantsScreen(
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
                             Text(
-                                text = stringResource(R.string.loading_plants),
-                                color = colorResource(R.color.text_primary)
+                                text = stringResource(R.string.loading_plants)
                             )
                         }
                     }
