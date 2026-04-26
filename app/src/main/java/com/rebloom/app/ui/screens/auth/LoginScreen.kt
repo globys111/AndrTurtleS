@@ -50,7 +50,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.isLoggedIn) {
         if (uiState.isLoggedIn) {
-            Toast.makeText(context, uiState.successMessage, Toast.LENGTH_SHORT).show()
+            uiState.successMessage?.let { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
             onLoginSuccess()
             viewModel.resetState()
         }

@@ -4,9 +4,10 @@ const val AUTH_ROUTE = "auth"
 const val MAIN_ROUTE = "main"
 
 sealed class AuthDestinations(val route: String) {
-    data object Login      : AuthDestinations("${AUTH_ROUTE}_login")
-    data object Register   : AuthDestinations("${AUTH_ROUTE}_register")
-    data object ForgotPass : AuthDestinations("${AUTH_ROUTE}_forgot")
+    data object Login       : AuthDestinations("${AUTH_ROUTE}_login")
+    data object Register    : AuthDestinations("${AUTH_ROUTE}_register")
+    data object ForgotPass  : AuthDestinations("${AUTH_ROUTE}_forgot")
+    data object NewPassword : AuthDestinations("${AUTH_ROUTE}_new_password")
 }
 
 sealed class MainDestinations(val route: String) {

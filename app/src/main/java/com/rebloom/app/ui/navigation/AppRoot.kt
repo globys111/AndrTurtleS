@@ -1,5 +1,8 @@
 package com.rebloom.app.ui.navigation
 
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -7,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,23 +32,65 @@ import com.rebloom.app.ui.screens.plants.PlantsScreen
 import com.rebloom.app.ui.screens.profile.ProfileScreen
 import com.rebloom.app.ui.screens.tasks.TasksScreen
 
+private const val NAV_TAG = "NAV"
+
 @Composable
-fun AppRoot() {
+fun AppRoot(deepLinkUri: Uri? = null) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val current = navBackStackEntry?.destination?.route
 
-    var isLoggedIn by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
-    LaunchedEffect(authState.isLoggedIn) {
-        if (authState.isLoggedIn) {
-            isLoggedIn = true
+    // Проверяем сохранённую сессию при старте (только если нет deep link)
+    LaunchedEffect(Unit) {
+        if (deepLinkUri == null) authViewModel.checkSession()
+    }
+
+    // Обрабатываем deep link
+    LaunchedEffect(deepLinkUri) {
+        deepLinkUri?.let { authViewModel.handleDeepLink(it) }
+    }
+
+    // Recovery deep link → экран смены пароля
+    LaunchedEffect(authState.isPasswordRecovery) {
+        if (authState.isPasswordRecovery) {
+            authViewModel.clearPasswordRecovery()
+            navController.navigate(AuthDestinations.NewPassword.route) {
+                popUpTo(AuthDestinations.Login.route) { inclusive = false }
+            }
         }
     }
 
-    val startDestination = if (isLoggedIn) MAIN_ROUTE else AUTH_ROUTE
+    // Ждём завершения инициализации (проверка сессии / обработка deep link)
+    if (authState.isInitializing) return
+
+    // Централизованная навигация на главный экран при входе
+    LaunchedEffect(authState.isLoggedIn) {
+        if (authState.isLoggedIn) {
+            val stack = navController.currentBackStack.value.map { it.destination.route }
+            Log.d(NAV_TAG, "isLoggedIn=true → navigate MAIN, currentStack=$stack")
+            navController.navigate(MAIN_ROUTE) {
+                // Убираем всё что есть в стеке, кроме корня
+                stack.filterNotNull().forEach { route ->
+                    Log.d(NAV_TAG, "popping route=$route")
+                }
+                val rootEntry = navController.currentBackStack.value.firstOrNull()
+                if (rootEntry != null) {
+                    popUpTo(rootEntry.destination.id) { inclusive = false }
+                }
+                launchSingleTop = true
+            }
+        }
+    }
+
+    // startDestination фиксируется ОДИН РАЗ при первой отрисовке после инициализации.
+    // Нельзя пересчитывать при каждой рекомпозиции — NavHost сбрасывает стек при изменении startDestination.
+    val startDestination = remember { if (authState.isLoggedIn) MAIN_ROUTE else AUTH_ROUTE }
+    Log.d(NAV_TAG, "compose startDestination=$startDestination current=$current isLoggedIn=${authState.isLoggedIn}")
+
     val showBottomBar = current in bottomItems.map { it.route }
 
     Scaffold(
@@ -93,15 +139,14 @@ fun AppRoot() {
                 composable(AuthDestinations.Login.route) {
                     LoginScreen(
                         onLoginSuccess = {
-                            isLoggedIn = true
-                            navController.navigate(MAIN_ROUTE) {
-                                popUpTo(AUTH_ROUTE) { inclusive = true }
-                            }
+                            Log.d(NAV_TAG, "onLoginSuccess callback fired (navigation handled by LaunchedEffect)")
                         },
                         onNavigateToRegister = {
+                            Log.d(NAV_TAG, "Login → Register")
                             navController.navigate(AuthDestinations.Register.route)
                         },
                         onNavigateToForgotPassword = {
+                            Log.d(NAV_TAG, "Login → ForgotPass")
                             navController.navigate(AuthDestinations.ForgotPass.route)
                         },
                         viewModel = authViewModel
@@ -111,19 +156,32 @@ fun AppRoot() {
                 composable(AuthDestinations.Register.route) {
                     RegisterScreen(
                         onRegisterSuccess = {
-                            isLoggedIn = true
-                            navController.navigate(MAIN_ROUTE) {
-                                popUpTo(AUTH_ROUTE) { inclusive = true }
-                            }
+                            Log.d(NAV_TAG, "onRegisterSuccess callback fired (navigation handled by LaunchedEffect)")
                         },
-                        onNavigateToLogin = { navController.popBackStack() },
+                        onNavigateToLogin = {
+                            Log.d(NAV_TAG, "Register → popBackStack to Login")
+                            navController.popBackStack()
+                        },
                         viewModel = authViewModel
                     )
                 }
 
                 composable(AuthDestinations.ForgotPass.route) {
                     ForgotPasswordScreen(
-                        onNavigateToLogin = { navController.popBackStack() },
+                        onNavigateToLogin = {
+                            Log.d(NAV_TAG, "ForgotPass → popBackStack")
+                            navController.popBackStack()
+                        },
+                        viewModel = authViewModel
+                    )
+                }
+
+                composable(AuthDestinations.NewPassword.route) {
+                    ForgotPasswordScreen(
+                        isRecoveryMode = true,
+                        onPasswordUpdated = {
+                            Log.d(NAV_TAG, "onPasswordUpdated callback fired (navigation handled by LaunchedEffect)")
+                        },
                         viewModel = authViewModel
                     )
                 }
