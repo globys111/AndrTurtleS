@@ -107,10 +107,13 @@ fun AppRoot(deepLinkUri: Uri? = null) {
                                     restoreState = true
                                 }
                             },
+                            modifier = Modifier.padding(horizontal = 0.dp),
                             label = {
                                 Text(
                                     text = stringResource(item.labelRes),
-                                    fontSize = 13.sp
+                                    fontSize = 12.sp,
+                                    maxLines = 1,
+                                    softWrap = false
                                 )
                             },
                             icon = {
