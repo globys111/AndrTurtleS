@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProps = Properties()
+        rootProject.file("local.properties").inputStream().use { localProps.load(it) }
+        buildConfigField("String", "SUPABASE_URL",      "\"${localProps["supabase.url"]}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProps["supabase.anonKey"]}\"")
     }
 
     buildTypes {
@@ -35,11 +42,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        }
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -71,4 +81,8 @@ dependencies {
 
     implementation(libs.androidx.compose.material.icons.extended)
 
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.auth)
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.core)
 }

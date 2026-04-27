@@ -1,5 +1,8 @@
 package com.rebloom.app.ui.navigation
 
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -7,13 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
-import com.rebloom.app.R
 import com.rebloom.app.domain.model.Article
 import com.rebloom.app.domain.model.Plant
 import com.rebloom.app.ui.screens.articles.ArticleDetailsScreen
@@ -29,37 +32,77 @@ import com.rebloom.app.ui.screens.plants.PlantsScreen
 import com.rebloom.app.ui.screens.profile.ProfileScreen
 import com.rebloom.app.ui.screens.tasks.TasksScreen
 
+private const val NAV_TAG = "NAV"
+
 @Composable
-fun AppRoot() {
+fun AppRoot(deepLinkUri: Uri? = null) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val current = navBackStackEntry?.destination?.route
 
-    var isLoggedIn by remember { mutableStateOf(false) }
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
-    LaunchedEffect(authState.isLoggedIn) {
-        if (authState.isLoggedIn) {
-            isLoggedIn = true
+    // Проверяем сохранённую сессию при старте (только если нет deep link)
+    LaunchedEffect(Unit) {
+        if (deepLinkUri == null) authViewModel.checkSession()
+    }
+
+    // Обрабатываем deep link
+    LaunchedEffect(deepLinkUri) {
+        deepLinkUri?.let { authViewModel.handleDeepLink(it) }
+    }
+
+    // Recovery deep link → экран смены пароля
+    LaunchedEffect(authState.isPasswordRecovery) {
+        if (authState.isPasswordRecovery) {
+            authViewModel.clearPasswordRecovery()
+            navController.navigate(AuthDestinations.NewPassword.route) {
+                popUpTo(AuthDestinations.Login.route) { inclusive = false }
+            }
         }
     }
 
-    val startDestination = if (isLoggedIn) AppRoute.Home.route else "auth"
-    val showBottomBar = isLoggedIn && current in bottomItems.map { it.route }
+    // Ждём завершения инициализации (проверка сессии / обработка deep link)
+    if (authState.isInitializing) return
+
+    // Централизованная навигация на главный экран при входе
+    LaunchedEffect(authState.isLoggedIn) {
+        if (authState.isLoggedIn) {
+            val stack = navController.currentBackStack.value.map { it.destination.route }
+            Log.d(NAV_TAG, "isLoggedIn=true → navigate MAIN, currentStack=$stack")
+            navController.navigate(MAIN_ROUTE) {
+                // Убираем всё что есть в стеке, кроме корня
+                stack.filterNotNull().forEach { route ->
+                    Log.d(NAV_TAG, "popping route=$route")
+                }
+                val rootEntry = navController.currentBackStack.value.firstOrNull()
+                if (rootEntry != null) {
+                    popUpTo(rootEntry.destination.id) { inclusive = false }
+                }
+                launchSingleTop = true
+            }
+        }
+    }
+
+    // startDestination фиксируется ОДИН РАЗ при первой отрисовке после инициализации.
+    // Нельзя пересчитывать при каждой рекомпозиции — NavHost сбрасывает стек при изменении startDestination.
+    val startDestination = remember { if (authState.isLoggedIn) MAIN_ROUTE else AUTH_ROUTE }
+    Log.d(NAV_TAG, "compose startDestination=$startDestination current=$current isLoggedIn=${authState.isLoggedIn}")
+
+    val showBottomBar = current in bottomItems.map { it.route }
 
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar(
-                    containerColor = Color(0xFFE9EED9)
-                ) {
+                NavigationBar(containerColor = Color(0xFFE9EED9)) {
                     bottomItems.forEach { item ->
                         NavigationBarItem(
                             selected = current == item.route,
                             onClick = {
                                 navController.navigate(item.route) {
-                                    popUpTo(AppRoute.Home.route) { saveState = true }
+                                    popUpTo(MainDestinations.Home.route) { saveState = true }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
@@ -93,126 +136,131 @@ fun AppRoot() {
             startDestination = startDestination,
             modifier = Modifier.padding(padding)
         ) {
-            composable("auth") {
-                LoginScreen(
-                    onLoginSuccess = {
-                        isLoggedIn = true
-                        navController.navigate(AppRoute.Home.route) {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    },
-                    onNavigateToRegister = {
-                        navController.navigate("register")
-                    },
-                    onNavigateToForgotPassword = {
-                        navController.navigate("forgot_password")
-                    },
-                    viewModel = authViewModel
-                )
-            }
+            // ── Auth Graph ───────────────────────────────────────────────
+            navigation(startDestination = AuthDestinations.Login.route, route = AUTH_ROUTE) {
 
-            composable("register") {
-                RegisterScreen(
-                    onRegisterSuccess = {
-                        isLoggedIn = true
-                        navController.navigate(AppRoute.Home.route) {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    },
-                    onNavigateToLogin = {
-                        navController.popBackStack()
-                    },
-                    viewModel = authViewModel
-                )
-            }
+                composable(AuthDestinations.Login.route) {
+                    LoginScreen(
+                        onLoginSuccess = {
+                            Log.d(NAV_TAG, "onLoginSuccess callback fired (navigation handled by LaunchedEffect)")
+                        },
+                        onNavigateToRegister = {
+                            Log.d(NAV_TAG, "Login → Register")
+                            navController.navigate(AuthDestinations.Register.route)
+                        },
+                        onNavigateToForgotPassword = {
+                            Log.d(NAV_TAG, "Login → ForgotPass")
+                            navController.navigate(AuthDestinations.ForgotPass.route)
+                        },
+                        viewModel = authViewModel
+                    )
+                }
 
-            composable("forgot_password") {
-                ForgotPasswordScreen(
-                    onNavigateToLogin = {
-                        navController.popBackStack()
-                    },
-                    viewModel = authViewModel
-                )
-            }
-
-            composable(AppRoute.Home.route) {
-                HomeScreen(
-                    onOpenProfile = { navController.navigate(AppRoute.Profile.route) },
-                    onOpenPlant = { plant ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
-                        navController.navigate(AppRoute.PlantDetails.route)
-                    }
-                )
-            }
-
-            composable(AppRoute.Profile.route) {
-                ProfileScreen(onBack = { navController.popBackStack() })
-            }
-
-            composable(AppRoute.PlantDetails.route) {
-                val plant = navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.get<Plant>("plant")
-
-                if (plant != null) {
-                    PlantDetailsScreen(
-                        plant = plant,
-                        onBack = {
-                            navController.currentBackStackEntry?.savedStateHandle?.remove<Plant>("plant")
+                composable(AuthDestinations.Register.route) {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            Log.d(NAV_TAG, "onRegisterSuccess callback fired (navigation handled by LaunchedEffect)")
+                        },
+                        onNavigateToLogin = {
+                            Log.d(NAV_TAG, "Register → popBackStack to Login")
                             navController.popBackStack()
                         },
-                        onEdit = {}
+                        viewModel = authViewModel
                     )
-                } else {
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
-                        navController.popBackStack()
-                    }
+                }
+
+                composable(AuthDestinations.ForgotPass.route) {
+                    ForgotPasswordScreen(
+                        onNavigateToLogin = {
+                            Log.d(NAV_TAG, "ForgotPass → popBackStack")
+                            navController.popBackStack()
+                        },
+                        viewModel = authViewModel
+                    )
+                }
+
+                composable(AuthDestinations.NewPassword.route) {
+                    ForgotPasswordScreen(
+                        isRecoveryMode = true,
+                        onPasswordUpdated = {
+                            Log.d(NAV_TAG, "onPasswordUpdated callback fired (navigation handled by LaunchedEffect)")
+                        },
+                        viewModel = authViewModel
+                    )
                 }
             }
 
-            composable(AppRoute.Tasks.route) {
-                TasksScreen(
-                    onOverdueClick = {
+            // ── Main Graph ───────────────────────────────────────────────
+            navigation(startDestination = MainDestinations.Home.route, route = MAIN_ROUTE) {
 
-                    }
-                )
-            }
-
-            composable(AppRoute.Plants.route) {
-                PlantsScreen(
-                    onPlantClick = { plant ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
-                        navController.navigate(AppRoute.PlantDetails.route)
-                    },
-                    onAddPlant = {}
-                )
-            }
-
-            composable(AppRoute.Articles.route) {
-                ArticlesScreen(
-                    onArticleClick = { article ->
-                        navController.currentBackStackEntry?.savedStateHandle?.set("article", article)
-                        navController.navigate(AppRoute.ArticleDetails.route)
-                    }
-                )
-            }
-
-            composable(AppRoute.ArticleDetails.route) {
-                val article = navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
-                if (article != null) {
-                    ArticleDetailsScreen(
-                        article = article,
-                        onBack = { navController.popBackStack() }
+                composable(MainDestinations.Home.route) {
+                    HomeScreen(
+                        onOpenProfile = { navController.navigate(MainDestinations.Profile.route) },
+                        onOpenPlant = { plant ->
+                            navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
+                            navController.navigate(MainDestinations.PlantDetails.route)
+                        }
                     )
-                } else {
-                    androidx.compose.runtime.LaunchedEffect(Unit) {
-                        navController.popBackStack()
+                }
+
+                composable(MainDestinations.Profile.route) {
+                    ProfileScreen(onBack = { navController.popBackStack() })
+                }
+
+                composable(MainDestinations.PlantDetails.route) {
+                    val plant = remember {
+                        navController.previousBackStackEntry?.savedStateHandle?.get<Plant>("plant")
+                    }
+                    if (plant != null) {
+                        PlantDetailsScreen(
+                            plant = plant,
+                            onBack = {
+                                navController.popBackStack()
+                            },
+                            onEdit = {}
+                        )
+                    } else {
+                        LaunchedEffect(Unit) { navController.popBackStack() }
                     }
                 }
-            }
 
-            composable(AppRoute.Community.route) {
-                CommunityScreen()
+                composable(MainDestinations.Tasks.route) {
+                    TasksScreen(onOverdueClick = {})
+                }
+
+                composable(MainDestinations.Plants.route) {
+                    PlantsScreen(
+                        onPlantClick = { plant ->
+                            navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
+                            navController.navigate(MainDestinations.PlantDetails.route)
+                        },
+                        onAddPlant = {}
+                    )
+                }
+
+                composable(MainDestinations.Articles.route) {
+                    ArticlesScreen(
+                        onArticleClick = { article ->
+                            navController.currentBackStackEntry?.savedStateHandle?.set("article", article)
+                            navController.navigate(MainDestinations.ArticleDetails.route)
+                        }
+                    )
+                }
+
+                composable(MainDestinations.ArticleDetails.route) {
+                    val article = remember {
+                        navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
+                    }
+                    if (article != null) {
+                        ArticleDetailsScreen(article = article, onBack = { navController.popBackStack() })
+                    } else {
+                        LaunchedEffect(Unit) { navController.popBackStack() }
+                    }
+                }
+
+                composable(MainDestinations.Community.route) {
+                    CommunityScreen()
+                }
             }
         }
     }

@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +32,7 @@ import com.rebloom.app.ui.theme.ProfileExit
 fun ProfileScreen(
     onBack: () -> Unit
 ) {
-    val sidePadding = runCatching { dimensionResource(R.dimen.screen_hpad) }.getOrElse { 30.dp }
+    val sidePadding = 30.dp
     val blockColor = HomeFramePicture
 
     LazyColumn(

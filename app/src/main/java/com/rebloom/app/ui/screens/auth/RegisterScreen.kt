@@ -52,9 +52,17 @@ fun RegisterScreen(
 
     LaunchedEffect(uiState.isLoggedIn) {
         if (uiState.isLoggedIn) {
-            Toast.makeText(context, uiState.successMessage, Toast.LENGTH_SHORT).show()
+            uiState.successMessage?.let { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
             onRegisterSuccess()
             viewModel.resetState()
+        }
+    }
+
+    LaunchedEffect(uiState.isRegistrationPending) {
+        if (uiState.isRegistrationPending) {
+            Toast.makeText(context, uiState.successMessage, Toast.LENGTH_LONG).show()
+            viewModel.clearRegistrationPending()
+            onNavigateToLogin()
         }
     }
 
