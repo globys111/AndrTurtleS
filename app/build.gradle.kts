@@ -71,5 +71,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
     implementation("androidx.glance:glance-appwidget:1.1.1")
+    val composeBom = platform("androidx.compose:compose-bom:2025.06.01")
+    implementation(composeBom)
 
 }
