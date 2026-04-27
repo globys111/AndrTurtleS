@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.2"
+agp = "9.1.1"
 kotlin = "2.3.20"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -13,7 +13,7 @@ serializationJson = "1.7.3"
 coroutines = "1.8.1"
 supabase = "3.5.0"
 ktor = "3.0.3"
-
+ui = "1.11.0"
 
 
 [libraries]
