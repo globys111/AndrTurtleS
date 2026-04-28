@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import com.rebloom.app.R
+import com.rebloom.app.ui.theme.ContainerColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,8 +114,8 @@ fun AddPlantsScreen(
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFFE2E6D5),
-                        focusedContainerColor = Color(0xFFE2E6D5),
+                        unfocusedContainerColor = ContainerColor,
+                        focusedContainerColor = ContainerColor,
                         unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
                         focusedBorderColor = Color(0xFF4A6646)
                     )
@@ -128,8 +129,8 @@ fun AddPlantsScreen(
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFFE2E6D5),
-                        focusedContainerColor = Color(0xFFE2E6D5),
+                        unfocusedContainerColor = ContainerColor,
+                        focusedContainerColor = ContainerColor,
                         unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
                         focusedBorderColor = Color(0xFF4A6646)
                     )
@@ -143,8 +144,8 @@ fun AddPlantsScreen(
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFFE2E6D5),
-                        focusedContainerColor = Color(0xFFE2E6D5),
+                        unfocusedContainerColor = ContainerColor,
+                        focusedContainerColor = ContainerColor,
                         unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
                         focusedBorderColor = Color(0xFF4A6646)
                     )

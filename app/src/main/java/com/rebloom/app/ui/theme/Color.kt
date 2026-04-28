@@ -19,4 +19,5 @@ val HomeCounterTasks = Color(0xFF618262)
 val HomeFramePicture = Color(0xFFE9EED9)
 val ProfileExit = Color(0xFFE53935)
 val TasksChooseBotton = Color(0xFFCBD2A4)
+val ContainerColor = Color(0xFFE2E6D5)
 
