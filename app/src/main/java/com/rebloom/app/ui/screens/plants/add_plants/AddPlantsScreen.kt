@@ -158,7 +158,7 @@ fun AddPlantsScreen(
                         onClick = {},
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 20.dp, bottom = 4.dp),
+                            .padding(top = 20.dp, bottom = 2.dp),
                         shape = RectangleShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = TasksChooseBotton
@@ -178,7 +178,11 @@ fun AddPlantsScreen(
                             )
                         }
                     }
-                    Text("вид", color = Color.Black)
+                    Text(
+                        text = "вид",
+                        color = Color.Black,
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
 
                     Spacer(modifier = Modifier.height(40.dp))
 
