@@ -2,13 +2,17 @@ package com.rebloom.app.ui.screens.plants
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -19,34 +23,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rebloom.app.R
 import com.rebloom.app.domain.model.Plant
 import com.rebloom.app.ui.common.UiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantsScreen(
     onPlantClick: (Plant) -> Unit,
     onAddPlant: () -> Unit
 ) {
-    // ViewModel
     val viewModel: PlantViewModel = viewModel()
     val plantsState = viewModel.plantState.collectAsState().value
     val searchQuery = viewModel.searchQuery.collectAsState().value
+    val filteredPlants = viewModel.filteredPlants.collectAsState().value
 
-    // Загрузка при старте
     LaunchedEffect(Unit) {
         viewModel.loadPlants()
     }
 
-    // Основной layout
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -63,7 +69,6 @@ fun PlantsScreen(
                     .background(colorResource(R.color.bg)),
                 contentAlignment = Alignment.Center
             ) {
-                // Зеленый овал
                 Box(
                     modifier = Modifier
                         .width(dimensionResource(R.dimen.oval_width))
@@ -92,178 +97,155 @@ fun PlantsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Поиск - ШИРИНА 246dp, высота 34dp
-                Box(
-                    modifier = Modifier
-                        .width(dimensionResource(R.dimen.search_width))
-                        .height(dimensionResource(R.dimen.search_height))
-                        .clip(RoundedCornerShape(dimensionResource(R.dimen.search_radius)))
-                        .background(colorResource(R.color.light_gray_transparent)),
-                    contentAlignment = Alignment.CenterStart
+                // Поле поиска
+                Surface(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(dimensionResource(R.dimen.search_radius)),
+                    color = Color.White,
+                    shadowElevation = 2.dp
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.search_inner_pad)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimensionResource(R.dimen.search_height))
+                            .padding(horizontal = dimensionResource(R.dimen.search_inner_pad)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = null,
-                            tint = colorResource(R.color.text_secondary).copy(alpha = 0.6f),
+                            tint = colorResource(R.color.text_secondary),
                             modifier = Modifier.size(dimensionResource(R.dimen.search_icon_size))
                         )
-
                         Spacer(modifier = Modifier.width(dimensionResource(R.dimen.search_icon_gap)))
+                        BasicTextField(
+                            value = searchQuery,
+                            onValueChange = { viewModel.updateSearchQuery(it) },
+                            modifier = Modifier.weight(1f),
+                            decorationBox = { innerTextField ->
+                                if (searchQuery.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.search_hint),
+                                        color = colorResource(R.color.text_secondary),
+                                        fontSize = dimensionResource(R.dimen.search_text_size).value.sp
+                                    )
+                                }
+                                innerTextField()
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                        )
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(
+                                onClick = { viewModel.updateSearchQuery("") },
+                                modifier = Modifier.size(dimensionResource(R.dimen.filter_button_size))
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Очистить",
+                                    tint = colorResource(R.color.text_secondary),
+                                    modifier = Modifier.size(dimensionResource(R.dimen.filter_icon_size))
+                                )
+                            }
+                        }
+                    }
+                }
 
-                        Text(
-                            text = stringResource(R.string.search_hint),
-                            color = colorResource(R.color.text_secondary).copy(alpha = 0.6f),
-                            fontSize = dimensionResource(R.dimen.search_text_size).value.sp
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.button_gap)))
+
+                // Кнопка фильтра
+                Surface(
+                    modifier = Modifier.size(dimensionResource(R.dimen.filter_button_size)),
+                    shape = CircleShape,
+                    color = colorResource(R.color.card_bg),
+                    shadowElevation = 2.dp,
+                    onClick = { /* TODO: фильтры */ }
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_filter),
+                            contentDescription = stringResource(R.string.filter_button),
+                            tint = colorResource(R.color.text_primary),
+                            modifier = Modifier.size(dimensionResource(R.dimen.filter_icon_size))
                         )
                     }
                 }
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.button_gap)),
-                    verticalAlignment = Alignment.CenterVertically
+                // Кнопка добавления
+                Surface(
+                    modifier = Modifier.size(dimensionResource(R.dimen.edit_button_size)),
+                    shape = CircleShape,
+                    color = colorResource(R.color.dark_green),
+                    shadowElevation = 2.dp,
+                    onClick = onAddPlant
                 ) {
-                    // Кнопка фильтрации - КРУГ 34dp
-                    Box(
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.filter_button_size))
-                            .clip(CircleShape)
-                            .background(colorResource(R.color.light_gray_transparent)),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_filter),
-                            contentDescription = stringResource(R.string.filter_button),
-                            modifier = Modifier.size(dimensionResource(R.dimen.filter_icon_size)),
-                            tint = colorResource(R.color.text_primary)
-                        )
-                    }
-
-                    // Кнопка редактирования - КРУГ 34dp
-                    Box(
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.edit_button_size))
-                            .clip(CircleShape)
-                            .background(colorResource(R.color.light_gray_transparent)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.edit_button),
-                            modifier = Modifier.size(dimensionResource(R.dimen.edit_icon_size)),
-                            tint = colorResource(R.color.text_primary)
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.add_plant),
+                            tint = Color.White,
+                            modifier = Modifier.size(dimensionResource(R.dimen.edit_icon_size))
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.content_top_pad)))
-
-            // Контент по состояниям
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = dimensionResource(R.dimen.screen_hpad))
-            ) {
-                when (plantsState) {
-                    UiState.Loading -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
-                            Text(
-                                text = stringResource(R.string.loading_plants),
-                                color = colorResource(R.color.text_primary)
-                            )
-                        }
+            // Контент
+            when (plantsState) {
+                is UiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
-
-                    is UiState.Error -> {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = stringResource(R.string.error_title),
-                                color = colorResource(R.color.accent_red)
-                            )
-                            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
-                            Button(
-                                onClick = { viewModel.loadPlants() }
-                            ) {
+                }
+                is UiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = plantsState.message, color = colorResource(R.color.accent_red))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = { viewModel.loadPlants() }) {
                                 Text(stringResource(R.string.retry))
                             }
                         }
                     }
-
-                    is UiState.Success -> {
-                        val plants = (plantsState as UiState.Success<List<Plant>>).data
-                        val filteredPlants = if (searchQuery.isEmpty()) {
-                            plants
-                        } else {
-                            plants.filter { plant ->
-                                plant.name.contains(searchQuery, ignoreCase = true) ||
-                                        plant.type.contains(searchQuery, ignoreCase = true)
-                            }
+                }
+                is UiState.Success -> {
+                    if (filteredPlants.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (searchQuery.isNotEmpty())
+                                    stringResource(R.string.no_plants_found)
+                                else
+                                    stringResource(R.string.no_plants),
+                                color = colorResource(R.color.text_secondary)
+                            )
                         }
-
-                        if (filteredPlants.isEmpty()) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = if (searchQuery.isEmpty()) {
-                                        stringResource(R.string.no_plants)
-                                    } else {
-                                        stringResource(R.string.no_plants_found)
-                                    },
-                                    color = colorResource(R.color.text_secondary)
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                horizontal = dimensionResource(R.dimen.screen_hpad),
+                                vertical = dimensionResource(R.dimen.content_top_pad)
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.block_gap))
+                        ) {
+                            items(filteredPlants) { plant ->
+                                PlantCard(
+                                    plant = plant,
+                                    onClick = { onPlantClick(plant) }
                                 )
-                            }
-                        } else {
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.block_gap)),
-                                contentPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_bottom_pad))
-                            ) {
-                                items(filteredPlants) { plant ->
-                                    PlantCard(
-                                        plant = plant,
-                                        onClick = { onPlantClick(plant) }
-                                    )
-                                }
                             }
                         }
                     }
                 }
             }
-        }
-
-        // FAB кнопка добавления
-        FloatingActionButton(
-            onClick = onAddPlant,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    end = dimensionResource(R.dimen.fab_end_pad),
-                    bottom = dimensionResource(R.dimen.fab_above_nav_pad)
-                ),
-            containerColor = colorResource(R.color.dark_green),
-            shape = CircleShape
-        ) {
-            Icon(
-                Icons.Default.Add,
-                stringResource(R.string.add_plant),
-                tint = colorResource(R.color.white)
-            )
         }
     }
 }
@@ -274,30 +256,27 @@ fun PlantCard(
     onClick: () -> Unit
 ) {
     Card(
-        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(dimensionResource(R.dimen.plant_card_height)),
+            .clickable { onClick() },
         shape = RoundedCornerShape(dimensionResource(R.dimen.card_radius)),
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.card_bg))
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.card_pad))
-                .fillMaxSize(),
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.card_pad)),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(dimensionResource(R.dimen.plant_image_container))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.card_radius)))
-                    .background(colorResource(R.color.white)),
-                contentAlignment = Alignment.Center
+            // Изображение растения
+            Surface(
+                modifier = Modifier.size(dimensionResource(R.dimen.plant_image_container)),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
             ) {
                 val imageResId = remember(plant.imageName) {
                     getDrawableResourceId(plant.imageName)
                 }
-
                 if (imageResId != 0) {
                     Image(
                         painter = painterResource(id = imageResId),
@@ -309,26 +288,37 @@ fun PlantCard(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_plants_selected),
                         contentDescription = plant.name,
-                        modifier = Modifier.size(dimensionResource(R.dimen.plant_image_size) * 0.7f),
-                        tint = colorResource(R.color.text_primary)
+                        modifier = Modifier.fillMaxSize().padding(8.dp),
+                        tint = colorResource(R.color.text_secondary)
                     )
                 }
             }
 
-            Spacer(Modifier.width(dimensionResource(R.dimen.card_pad)))
+            Spacer(modifier = Modifier.width(dimensionResource(R.dimen.block_gap)))
 
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = plant.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = colorResource(R.color.text_primary),
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = colorResource(R.color.text_primary)
                 )
-                Spacer(Modifier.height(dimensionResource(R.dimen.text_pad)))
                 Text(
                     text = plant.type,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = colorResource(R.color.text_secondary)
+                )
+            }
+
+            IconButton(
+                onClick = { /* TODO: редактирование */ },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit_button),
+                    tint = colorResource(R.color.text_secondary),
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -337,7 +327,11 @@ fun PlantCard(
 
 private fun getDrawableResourceId(imageName: String): Int {
     return try {
-        val nameWithoutExtension = imageName.substringBeforeLast(".")
+        val nameWithoutExtension = if (imageName.contains(".")) {
+            imageName.substringBeforeLast(".")
+        } else {
+            imageName
+        }
         val field = R.drawable::class.java.getDeclaredField(nameWithoutExtension)
         field.getInt(null)
     } catch (e: Exception) {

@@ -82,4 +82,5 @@
     <string name="article_rating">Рейтинг: %.1f</string>
     <string name="loading_posts">Загрузка публикаций...</string>
     <string name="no_posts">Нет публикаций</string>
+
 </resources>
