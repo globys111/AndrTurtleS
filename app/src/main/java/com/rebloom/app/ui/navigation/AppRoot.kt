@@ -29,6 +29,7 @@ import com.rebloom.app.ui.screens.community.CommunityScreen
 import com.rebloom.app.ui.screens.home.HomeScreen
 import com.rebloom.app.ui.screens.plants.PlantDetailsScreen
 import com.rebloom.app.ui.screens.plants.PlantsScreen
+import com.rebloom.app.ui.screens.plants.add_plants.AddPlantsScreen
 import com.rebloom.app.ui.screens.profile.ProfileScreen
 import com.rebloom.app.ui.screens.tasks.TasksScreen
 
@@ -234,7 +235,18 @@ fun AppRoot(deepLinkUri: Uri? = null) {
                             navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
                             navController.navigate(MainDestinations.PlantDetails.route)
                         },
-                        onAddPlant = {}
+                        onAddPlant = {
+                            navController.navigate(MainDestinations.AddPlant.route)
+                        }
+                    )
+                }
+
+                composable(MainDestinations.AddPlant.route) {
+                    AddPlantsScreen(
+                        onClose = { navController.popBackStack() },
+                        onConfirm = { name, type, description ->
+                            navController.popBackStack()
+                        }
                     )
                 }
 

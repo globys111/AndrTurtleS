@@ -3,6 +3,7 @@ package com.rebloom.app
 import android.app.Application
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
+import com.rebloom.app.BuildConfig
 
 class RebloomApp : Application() {
 
