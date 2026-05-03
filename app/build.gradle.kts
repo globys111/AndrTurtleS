@@ -85,4 +85,10 @@ dependencies {
     implementation(libs.supabase.auth)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.core)
+
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    val composeBom = platform("androidx.compose:compose-bom:2025.06.01")
+    implementation(composeBom)
+
+
 }
