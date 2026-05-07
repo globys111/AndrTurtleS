@@ -243,10 +243,7 @@ fun AppRoot(deepLinkUri: Uri? = null) {
 
                 composable(MainDestinations.AddPlant.route) {
                     AddPlantsScreen(
-                        onClose = { navController.popBackStack() },
-                        onConfirm = { name, type, description ->
-                            navController.popBackStack()
-                        }
+                        onClose = { navController.popBackStack() }
                     )
                 }
 

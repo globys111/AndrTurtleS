@@ -3,18 +3,19 @@ package com.rebloom.app.ui.screens.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.rebloom.app.data.repository.PlantRepository
 import com.rebloom.app.data.repository.TaskRepository
+import com.rebloom.app.data.repository.UserPlantRepository
 import com.rebloom.app.domain.usecase.TaskScheduler
 import com.rebloom.app.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val plantRepo = PlantRepository(app.applicationContext)
+    private val plantRepo = UserPlantRepository(app.applicationContext)
     private val taskRepo = TaskRepository(app.applicationContext)
 
     private val _state = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
@@ -24,7 +25,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = UiState.Loading
         viewModelScope.launch {
             try {
-                val plants = plantRepo.loadPlants()
+                val plants = plantRepo.observePlants().first()
                 val defs = taskRepo.loadTaskDefinitions()
                 val today = LocalDate.now()
                 val occ = TaskScheduler.generateOccurrences(defs, today = today)

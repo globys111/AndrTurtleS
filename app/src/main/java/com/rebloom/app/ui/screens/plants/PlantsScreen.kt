@@ -1,6 +1,5 @@
 package com.rebloom.app.ui.screens.plants
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,14 +12,13 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import coil.compose.AsyncImage
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,11 +38,6 @@ fun PlantsScreen(
     val viewModel: PlantViewModel = viewModel()
     val plantsState = viewModel.plantState.collectAsState().value
     val searchQuery = viewModel.searchQuery.collectAsState().value
-
-    // Загрузка при старте
-    LaunchedEffect(Unit) {
-        viewModel.loadPlants()
-    }
 
     // Основной layout
     Box(
@@ -195,7 +188,7 @@ fun PlantsScreen(
                             )
                             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
                             Button(
-                                onClick = { viewModel.loadPlants() }
+                                onClick = { viewModel.retry() }
                             ) {
                                 Text(stringResource(R.string.retry))
                             }
@@ -293,13 +286,9 @@ fun PlantCard(
                     .background(colorResource(R.color.white)),
                 contentAlignment = Alignment.Center
             ) {
-                val imageResId = remember(plant.imageName) {
-                    getDrawableResourceId(plant.imageName)
-                }
-
-                if (imageResId != 0) {
-                    Image(
-                        painter = painterResource(id = imageResId),
+                if (plant.imageUrl != null) {
+                    AsyncImage(
+                        model = plant.imageUrl,
                         contentDescription = plant.name,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -334,12 +323,3 @@ fun PlantCard(
     }
 }
 
-private fun getDrawableResourceId(imageName: String): Int {
-    return try {
-        val nameWithoutExtension = imageName.substringBeforeLast(".")
-        val field = R.drawable::class.java.getDeclaredField(nameWithoutExtension)
-        field.getInt(null)
-    } catch (e: Exception) {
-        0
-    }
-}
