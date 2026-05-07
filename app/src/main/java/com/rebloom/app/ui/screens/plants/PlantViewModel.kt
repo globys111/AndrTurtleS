@@ -24,6 +24,9 @@ class PlantViewModel(app: Application) : AndroidViewModel(app) {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode
+
     init {
         viewModelScope.launch {
             try { repo.syncFromRemote() } catch (_: Exception) {}
@@ -38,5 +41,14 @@ class PlantViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun enterEditMode() { _isEditMode.value = true }
+    fun exitEditMode()  { _isEditMode.value = false }
+
+    fun deletePlant(plant: Plant) {
+        viewModelScope.launch {
+            try { repo.deletePlant(plant) } catch (_: Exception) {}
+        }
     }
 }

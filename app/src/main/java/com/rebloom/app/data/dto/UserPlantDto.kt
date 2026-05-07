@@ -6,30 +6,32 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserPlantDto(
     val id: String,
-    @SerialName("user_id")          val userId: String,
-    @SerialName("plant_id")         val plantId: String? = null,
+    @SerialName("user_id")           val userId: String,
+    @SerialName("plant_id")          val plantId: String? = null,
     val nickname: String,
+    @SerialName("plant_type_name")   val plantTypeName: String? = null,
     val notes: String? = null,
-    @SerialName("acquired_date")    val acquiredDate: String? = null,
-    @SerialName("custom_image_url") val customImageUrl: String? = null,
+    @SerialName("acquired_date")     val acquiredDate: String? = null,
+    @SerialName("custom_image_url")  val customImageUrl: String? = null,
     val room: String? = null,
-    @SerialName("last_watered_at")  val lastWateredAt: String? = null,
-    @SerialName("created_at")       val createdAt: String,
+    @SerialName("last_watered_at")   val lastWateredAt: String? = null,
+    @SerialName("created_at")        val createdAt: String,
 )
 
 @Serializable
 data class UserPlantWithCacheDto(
     val id: String,
-    @SerialName("user_id")          val userId: String,
-    @SerialName("plant_id")         val plantId: String? = null,
+    @SerialName("user_id")           val userId: String,
+    @SerialName("plant_id")          val plantId: String? = null,
     val nickname: String,
+    @SerialName("plant_type_name")   val plantTypeName: String? = null,
     val notes: String? = null,
-    @SerialName("acquired_date")    val acquiredDate: String? = null,
-    @SerialName("custom_image_url") val customImageUrl: String? = null,
+    @SerialName("acquired_date")     val acquiredDate: String? = null,
+    @SerialName("custom_image_url")  val customImageUrl: String? = null,
     val room: String? = null,
-    @SerialName("last_watered_at")  val lastWateredAt: String? = null,
-    @SerialName("created_at")       val createdAt: String,
-    @SerialName("plants_cache")     val plantsCache: PlantCacheRefDto? = null,
+    @SerialName("last_watered_at")   val lastWateredAt: String? = null,
+    @SerialName("created_at")        val createdAt: String,
+    @SerialName("plants_cache")      val plantsCache: PlantCacheRefDto? = null,
 )
 
 @Serializable

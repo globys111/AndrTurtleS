@@ -21,6 +21,13 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val _state = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
     val state: StateFlow<UiState<HomeData>> = _state
 
+    init {
+        viewModelScope.launch {
+            try { plantRepo.syncFromRemote() } catch (_: Exception) {}
+            load()
+        }
+    }
+
     fun load() {
         _state.value = UiState.Loading
         viewModelScope.launch {

@@ -15,4 +15,10 @@ class StorageRemoteDataSource(private val context: Context) {
         bucket.upload(path, bytes) { upsert = true }
         return bucket.publicUrl(path)
     }
+
+    suspend fun deletePhoto(plantId: String) {
+        try {
+            bucket.delete(listOf("user_plants/$plantId.jpg"))
+        } catch (_: Exception) {}
+    }
 }

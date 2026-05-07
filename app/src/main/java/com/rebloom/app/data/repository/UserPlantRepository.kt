@@ -66,6 +66,14 @@ class UserPlantRepository(context: Context) {
         dao.getUnsynced().forEach { syncToRemote(it) }
     }
 
+    suspend fun deletePlant(plant: Plant) {
+        dao.delete(plant.id)
+        try {
+            remote.delete(plant.id)
+            if (plant.imageUrl != null) storage.deletePhoto(plant.id)
+        } catch (_: Exception) {}
+    }
+
     suspend fun syncFromRemote() {
         val userId = auth.currentUserOrNull()?.id ?: return
         val dtos = remote.fetchAll(userId)
