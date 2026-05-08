@@ -1,9 +1,10 @@
 package com.rebloom.app
 
 import android.app.Application
-import android.net.http.HttpResponseCache.install
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 import com.rebloom.app.BuildConfig
 
 class RebloomApp : Application() {
@@ -20,6 +21,8 @@ class RebloomApp : Application() {
             supabaseKey = BuildConfig.SUPABASE_ANON_KEY
         ) {
             install(Auth)
+            install(Postgrest)
+            install(Storage)
         }
     }
 }

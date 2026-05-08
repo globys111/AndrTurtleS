@@ -349,12 +349,6 @@ private fun PlantCard(
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val context = LocalContext.current
-
-        // если вдруг в JSON будет "pic_plant_1.png" — уберём расширение
-        val safeName = plant.imageName.substringBeforeLast('.')
-        val plantRes = drawableIdByName(context, safeName)
-
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -362,11 +356,12 @@ private fun PlantCard(
                 .background(Color.White),
             contentAlignment = Alignment.Center
         ) {
-            if (plantRes != null) {
-                Image(
-                    painter = painterResource(plantRes),
+            if (plant.imageUrl != null) {
+                coil.compose.AsyncImage(
+                    model = plant.imageUrl,
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
             }
         }

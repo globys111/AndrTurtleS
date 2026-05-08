@@ -1,6 +1,5 @@
 package com.rebloom.app.ui.screens.plants
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.rebloom.app.R
 import com.rebloom.app.domain.model.Plant
 import java.text.SimpleDateFormat
@@ -111,13 +111,9 @@ fun PlantDetailsScreen(
                     .fillMaxWidth()
                     .height(350.dp)
             ) {
-                val imageResId = remember(plant.imageName) {
-                    getDrawableResourceId(plant.imageName)
-                }
-
-                if (imageResId != 0) {
-                    Image(
-                        painter = painterResource(id = imageResId),
+                if (plant.imageUrl != null) {
+                    AsyncImage(
+                        model = plant.imageUrl,
                         contentDescription = plant.name,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -407,16 +403,3 @@ fun CareTaskItem(
     }
 }
 
-private fun getDrawableResourceId(imageName: String): Int {
-    return try {
-        val nameWithoutExtension = if (imageName.contains(".")) {
-            imageName.substringBeforeLast(".")
-        } else {
-            imageName
-        }
-        val field = R.drawable::class.java.getDeclaredField(nameWithoutExtension)
-        field.getInt(null)
-    } catch (e: Exception) {
-        0
-    }
-}
