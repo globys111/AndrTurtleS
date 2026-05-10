@@ -11,16 +11,33 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.content.SharedPreferences
+import android.content.Context
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import com.rebloom.app.ui.screens.widget.Widget
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class TaskViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = TaskRepository(app.applicationContext)
-
+    private val prefs: SharedPreferences = app.getSharedPreferences("task_prefs", Context.MODE_PRIVATE)
     private val _uiState = MutableStateFlow<UiState<List<TaskDefinition>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<TaskDefinition>>> = _uiState.asStateFlow()
+    private val _completedIds = MutableStateFlow<Set<String>>(emptySet())
+    val completedIds: StateFlow<Set<String>> = _completedIds.asStateFlow()
+    val completedCount: StateFlow<Int> = completedIds.map { it.size }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     init {
+        loadCompletedTasks()
         loadTasks()
+    }
+
+    private fun loadCompletedTasks() {
+        val saved = prefs.getStringSet("completed_ids", emptySet()) ?: emptySet()
+        _completedIds.value = saved.toSet()
     }
 
     fun loadTasks() {
@@ -31,6 +48,23 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
                 _uiState.value = UiState.Success(tasks)
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: ErrorLoading)
+            }
+        }
+    }
+    fun toggleTaskCompletion(task: TaskDefinition){
+        val taskId = task.id ?: task.hashCode().toString()
+        val current = _completedIds.value.toMutableSet()
+        if (current.contains(taskId)) current.remove(taskId) else current.add(taskId)
+        _completedIds.value = current
+        prefs.edit().putStringSet("completed_ids", current).commit()
+        updateWidget()
+    }
+    private fun updateWidget() {
+        val context = getApplication<Application>().applicationContext
+        viewModelScope.launch {
+            val manager = GlanceAppWidgetManager(context)
+            manager.getGlanceIds(Widget::class.java).forEach { glanceId ->
+                Widget().update(context, glanceId)
             }
         }
     }

@@ -95,7 +95,9 @@ dependencies {
 
     implementation(libs.coil.compose)
 
-    implementation("androidx.glance:glance-appwidget:1.1.1")
+    //implementation("androidx.glance:glance-appwidget:1.1.1")
+    //implementation("androidx.glance:glance-appwidget:1.2.0-beta01")
+    implementation("androidx.glance:glance-appwidget:1.2.0-rc01")
     val composeBom = platform("androidx.compose:compose-bom:2025.06.01")
     implementation(composeBom)
 

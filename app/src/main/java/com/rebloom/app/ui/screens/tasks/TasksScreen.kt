@@ -35,6 +35,7 @@ fun TasksScreen(
     viewModel: TaskViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val completedIds by viewModel.completedIds.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
         UiState.Loading -> {
@@ -114,7 +115,10 @@ fun TasksScreen(
                 }
 
                 items(tasks) { task ->
-                    TaskCard(task = task)
+                    val taskId = task.id ?: task.hashCode().toString()
+                    val isCompleted = completedIds.contains(taskId)
+
+                    TaskCard(task = task, isCompleted = isCompleted, onToggle = { viewModel.toggleTaskCompletion(task) })
                 }
             }
         }
@@ -122,7 +126,7 @@ fun TasksScreen(
 }
 
 @Composable
-fun TaskCard(task: TaskDefinition) {
+fun TaskCard(task: TaskDefinition, isCompleted: Boolean, onToggle: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -162,8 +166,8 @@ fun TaskCard(task: TaskDefinition) {
             }
 
             Checkbox(
-                checked = true,
-                onCheckedChange = {}
+                checked = isCompleted,
+                onCheckedChange = {onToggle()}
             )
         }
     }
