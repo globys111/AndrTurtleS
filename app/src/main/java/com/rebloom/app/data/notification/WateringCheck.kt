@@ -46,7 +46,7 @@ class WateringCheck(
                 .build()
 
             val request = PeriodicWorkRequestBuilder<WateringCheck>(
-                1, TimeUnit.HOURS   // проверка раз в час
+                1, TimeUnit.HOURS
             )
                 .setConstraints(constraints)
                 .build()

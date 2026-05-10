@@ -27,7 +27,7 @@ object Notification {
 
     fun showWateringReminder(context: Context, message: String) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_water_today)  // ваша иконка полива
+            .setSmallIcon(R.drawable.ic_water_today)
             .setContentTitle("Не забудьте полить растение!")
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
