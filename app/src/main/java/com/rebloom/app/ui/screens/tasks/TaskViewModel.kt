@@ -1,6 +1,8 @@
 package com.rebloom.app.ui.screens.tasks
 
 import android.app.Application
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.rebloom.app.data.repository.TaskRepository
@@ -13,8 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import android.content.SharedPreferences
 import android.content.Context
-import androidx.glance.appwidget.GlanceAppWidgetManager
-import com.rebloom.app.ui.screens.widget.Widget
+import com.rebloom.app.ui.screens.widget.MascotWidgetReceiver
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -61,11 +62,12 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
     }
     private fun updateWidget() {
         val context = getApplication<Application>().applicationContext
-        viewModelScope.launch {
-            val manager = GlanceAppWidgetManager(context)
-            manager.getGlanceIds(Widget::class.java).forEach { glanceId ->
-                Widget().update(context, glanceId)
-            }
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val componentName = ComponentName(context, MascotWidgetReceiver::class.java)
+        val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+
+        for (appWidgetId in appWidgetIds) {
+            MascotWidgetReceiver.updateWidget(context, appWidgetManager, appWidgetId)
         }
     }
 }

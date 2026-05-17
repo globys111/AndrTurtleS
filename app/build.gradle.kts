@@ -97,7 +97,6 @@ dependencies {
 
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    implementation("androidx.glance:glance-appwidget:1.2.0-rc01")
     val composeBom = platform("androidx.compose:compose-bom:2025.06.01")
     implementation(composeBom)
 
