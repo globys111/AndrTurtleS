@@ -5,6 +5,8 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.storage.Storage
+import com.rebloom.app.data.notification.Notification
+import com.rebloom.app.data.notification.WateringCheck
 import com.rebloom.app.BuildConfig
 
 class RebloomApp : Application() {
@@ -24,5 +26,7 @@ class RebloomApp : Application() {
             install(Postgrest)
             install(Storage)
         }
+        Notification.createChannel(this)
+        WateringCheck.schedule(this)
     }
 }
