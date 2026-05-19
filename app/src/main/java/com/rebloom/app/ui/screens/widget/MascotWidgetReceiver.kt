@@ -35,8 +35,7 @@ class MascotWidgetReceiver : AppWidgetProvider() {
 
             val bgRes = if (count == 0) R.drawable.dont_ok_widget else R.drawable.ok_widget
             views.setImageViewResource(R.id.widget_background, bgRes)
-
-            views.setTextViewText(R.id.widget_text, "Выполнено: $count/4")
+            views.setTextViewText(R.id.widget_text, context.getString(R.string.widget_completed, count))
 
             val intent = Intent(context, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(
