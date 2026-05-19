@@ -33,9 +33,10 @@ class MascotWidgetReceiver : AppWidgetProvider() {
 
             val views = RemoteViews(context.packageName, R.layout.default_widget_model)
 
-            views.setTextViewText(R.id.widget_text, "Выполнено: $count")
-            views.setTextColor(R.id.widget_text, android.graphics.Color.WHITE)
-            views.setFloat(R.id.widget_text, "setTextSize", 18f)
+            val bgRes = if (count == 0) R.drawable.dont_ok_widget else R.drawable.ok_widget
+            views.setImageViewResource(R.id.widget_background, bgRes)
+
+            views.setTextViewText(R.id.widget_text, "Выполнено: $count/4")
 
             val intent = Intent(context, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(

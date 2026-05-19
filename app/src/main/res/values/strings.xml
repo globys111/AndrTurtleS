@@ -30,7 +30,7 @@
     <string name="error_title">Что-то пошло не так</string>
     <string name="retry">Повторить</string>
 
-    <!-- Profile (если используешь) -->
+    <!-- Profile -->
     <string name="profile_edit">Редактировать профиль</string>
 
     <string name="section_general">Общие параметры</string>
