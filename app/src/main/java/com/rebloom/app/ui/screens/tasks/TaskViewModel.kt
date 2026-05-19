@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class TaskViewModel(app: Application) : AndroidViewModel(app) {
 
+    private val _totalTasks = MutableStateFlow(0)
+    val totalTasks: StateFlow<Int> = _totalTasks.asStateFlow()
     private val repository = TaskRepository(app.applicationContext)
     private val prefs: SharedPreferences = app.getSharedPreferences("task_prefs", Context.MODE_PRIVATE)
     private val _uiState = MutableStateFlow<UiState<List<TaskDefinition>>>(UiState.Loading)
@@ -47,6 +49,8 @@ class TaskViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 val tasks = repository.loadTaskDefinitions()
                 _uiState.value = UiState.Success(tasks)
+                _totalTasks.value = tasks.size
+                prefs.edit().putInt("total_tasks", tasks.size).apply()
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: ErrorLoading)
             }
