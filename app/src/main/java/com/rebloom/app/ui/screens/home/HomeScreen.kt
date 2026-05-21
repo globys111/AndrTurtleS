@@ -14,6 +14,7 @@ import com.rebloom.app.R
 import com.rebloom.app.domain.model.Plant
 import com.rebloom.app.domain.usecase.TaskScheduler
 import com.rebloom.app.ui.common.UiState
+import com.rebloom.app.ui.screens.profile.ProfileViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
@@ -23,10 +24,11 @@ import java.util.Locale
 fun HomeScreen(
     onOpenProfile: () -> Unit,
     onOpenPlant: (Plant) -> Unit,
-    vm: HomeViewModel = viewModel()
+    vm: HomeViewModel = viewModel(),
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
     LaunchedEffect(Unit) { vm.load() }
-
+    val profileState by profileViewModel.uiState.collectAsState()
     val state by vm.state.collectAsState()
     val side = dimensionResource(R.dimen.screen_hpad)
 
@@ -81,6 +83,7 @@ fun HomeScreen(
                         HomeTopBar(
                             greetingText = greeting,
                             hasNewNotifications = true,
+                            avatarUrl = profileState.avatarUrl,
                             onProfileClick = onOpenProfile,
                             onNotificationsClick = { /* позже */ }
                         )

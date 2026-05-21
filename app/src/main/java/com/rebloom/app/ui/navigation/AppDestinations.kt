@@ -20,4 +20,5 @@ sealed class MainDestinations(val route: String) {
     data object PlantDetails  : MainDestinations("${MAIN_ROUTE}_plant_details")
     data object ArticleDetails: MainDestinations("${MAIN_ROUTE}_article_details")
     data object AddPlant : MainDestinations("${MAIN_ROUTE}_add_plant")
+    data object EditProfile: MainDestinations("${MAIN_ROUTE}_edit_profile")
 }

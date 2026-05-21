@@ -31,17 +31,19 @@ import com.rebloom.app.ui.screens.plants.PlantDetailsScreen
 import com.rebloom.app.ui.screens.plants.PlantsScreen
 import com.rebloom.app.ui.screens.plants.add_plants.AddPlantsScreen
 import com.rebloom.app.ui.screens.profile.ProfileScreen
+import com.rebloom.app.ui.screens.profile.EditProfileScreen
 import com.rebloom.app.ui.screens.tasks.TasksScreen
 
 private const val NAV_TAG = "NAV"
 
 @Composable
-fun AppRoot(deepLinkUri: Uri? = null) {
+fun AppRoot(deepLinkUri: Uri? = null,
+            authViewModel: AuthViewModel = viewModel()) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val current = navBackStackEntry?.destination?.route
 
-    val authViewModel: AuthViewModel = viewModel()
+    //val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
     val context = LocalContext.current
 
@@ -205,7 +207,15 @@ fun AppRoot(deepLinkUri: Uri? = null) {
                 }
 
                 composable(MainDestinations.Profile.route) {
-                    ProfileScreen(onBack = { navController.popBackStack() })
+                    ProfileScreen(
+                        onBack = { navController.popBackStack() },
+                        onEditProfile = { navController.navigate(MainDestinations.EditProfile.route) },
+                        onSignedOut = {
+                            navController.navigate(AUTH_ROUTE) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    )
                 }
 
                 composable(MainDestinations.PlantDetails.route) {
@@ -269,6 +279,9 @@ fun AppRoot(deepLinkUri: Uri? = null) {
 
                 composable(MainDestinations.Community.route) {
                     CommunityScreen()
+                }
+                composable(MainDestinations.EditProfile.route) {
+                    EditProfileScreen(onBack = { navController.popBackStack() })
                 }
             }
         }

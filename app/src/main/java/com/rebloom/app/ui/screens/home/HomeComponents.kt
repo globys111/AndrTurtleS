@@ -43,11 +43,14 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 
 @Composable
 fun HomeTopBar(
     greetingText: String,
     hasNewNotifications: Boolean,
+    avatarUrl: String?,                                // <-- добавить параметр
     onProfileClick: () -> Unit,
     onNotificationsClick: () -> Unit
 ) {
@@ -57,14 +60,27 @@ fun HomeTopBar(
             .padding(top = 12.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_profile_main_screen),
-            contentDescription = null,
+        Box(
             modifier = Modifier
                 .size(41.dp)
                 .clip(RoundedCornerShape(999.dp))
                 .clickable { onProfileClick() }
-        )
+        ) {
+            if (avatarUrl != null) {
+                AsyncImage(
+                    model = avatarUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.ic_profile_main_screen),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
 
         Spacer(Modifier.width(12.dp))
 
