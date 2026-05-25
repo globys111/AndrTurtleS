@@ -1,5 +1,6 @@
 package com.rebloom.app.ui.screens.plants
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -50,6 +51,10 @@ fun PlantsScreen(
 
     var showConfirmExit by remember { mutableStateOf(false) }
     var plantToDelete by remember { mutableStateOf<Plant?>(null) }
+
+    BackHandler(enabled = isEditMode) {
+        showConfirmExit = true
+    }
 
     if (showConfirmExit) {
         Dialog(onDismissRequest = { showConfirmExit = false }) {

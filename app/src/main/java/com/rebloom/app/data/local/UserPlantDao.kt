@@ -14,6 +14,12 @@ interface UserPlantDao {
     @Upsert
     suspend fun upsertAll(entities: List<UserPlantEntity>)
 
+    @Query("SELECT * FROM user_plants WHERE id = :id")
+    suspend fun getById(id: String): UserPlantEntity?
+
+    @Query("SELECT * FROM user_plants WHERE id = :id")
+    fun observeById(id: String): Flow<UserPlantEntity?>
+
     @Query("DELETE FROM user_plants WHERE id = :id")
     suspend fun delete(id: String)
 

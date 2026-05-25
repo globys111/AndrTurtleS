@@ -22,9 +22,16 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     val state: StateFlow<UiState<HomeData>> = _state
 
     init {
+        viewModelScope.launch { load() }
         viewModelScope.launch {
-            try { plantRepo.syncFromRemote() } catch (_: Exception) {}
-            load()
+            try {
+                plantRepo.syncFromRemote()
+                val current = _state.value
+                if (current is UiState.Success) {
+                    val plants = plantRepo.observePlants().first()
+                    _state.value = UiState.Success(current.data.copy(plants = plants))
+                }
+            } catch (_: Exception) {}
         }
     }
 
