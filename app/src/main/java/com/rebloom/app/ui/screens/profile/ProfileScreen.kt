@@ -12,6 +12,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,16 +25,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.rebloom.app.R
 import com.rebloom.app.ui.theme.HomeFramePicture
 import com.rebloom.app.ui.theme.HomeTextDay
-import com.rebloom.app.ui.theme.HomeTextDow
 import com.rebloom.app.ui.theme.ProfileExit
 
 @Composable
 fun ProfileScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEditProfile: () -> Unit,
+    onSignedOut: () -> Unit,
+    viewModel: ProfileViewModel = viewModel()
 ) {
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(state.isSignedOut) {
+        if (state.isSignedOut) onSignedOut()
+    }
     val sidePadding = 30.dp
     val blockColor = HomeFramePicture
 
@@ -43,7 +55,6 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            // Top back button
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -59,29 +70,41 @@ fun ProfileScreen(
         }
 
         item {
-            // Profile header
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_profile_pic_profile_screen),
-                    contentDescription = null,
+                Box(
                     modifier = Modifier
                         .size(96.dp)
-                        .clip(RoundedCornerShape(999.dp)),
-                    contentScale = ContentScale.Crop
-                )
+                        .clip(RoundedCornerShape(999.dp))
+                ) {
+                    if (state.avatarUrl != null) {
+                        AsyncImage(
+                            model = state.avatarUrl,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.ic_profile_pic_profile_screen),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
 
                 Spacer(Modifier.height(10.dp))
 
                 Text(
-                    text = "Имя пользователя",
+                    text = state.username.ifBlank { "Имя пользователя" },
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "email@example.com",
+                    text = state.email.ifBlank { "email@example.com" },
                     fontSize = 14.sp,
                     color = Color(0x99242823)
                 )
@@ -89,7 +112,7 @@ fun ProfileScreen(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = "Обо мне…",
+                    text = state.bio.ifBlank { "Обо мне…" },
                     fontSize = 14.sp,
                     color = Color(0x99242823)
                 )
@@ -97,7 +120,7 @@ fun ProfileScreen(
                 Spacer(Modifier.height(12.dp))
 
                 Button(
-                    onClick = { /* позже */ },
+                    onClick = onEditProfile,
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = blockColor)
                 ) {
@@ -146,13 +169,12 @@ fun ProfileScreen(
         }
 
         item {
-            // Bottom actions
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Button(
-                    onClick = { /* logout */ },
+                    onClick = { viewModel.signOut() },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = ProfileExit)
@@ -161,7 +183,7 @@ fun ProfileScreen(
                 }
 
                 Button(
-                    onClick = { /* delete */ },
+                    onClick = { viewModel.deleteAccount() },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = ProfileExit)
@@ -207,7 +229,6 @@ private fun SettingsGroupCard(
                         containerColor = blockColor
                     )
 
-                    // Divider между строками (ширина как у кнопок)
                     if (index != items.lastIndex) {
                         Divider(
                             modifier = Modifier
