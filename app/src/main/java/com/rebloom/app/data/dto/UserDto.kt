@@ -8,5 +8,5 @@ data class UserDto(
     val name: String,
     val email: String,
     val about: String,
-    val avatarImageName: String
+    val avatarImageName: String,
 )
