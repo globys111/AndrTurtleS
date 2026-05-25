@@ -9,6 +9,7 @@ import com.rebloom.app.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,9 +28,18 @@ class PlantViewModel(app: Application) : AndroidViewModel(app) {
     private val _isEditMode = MutableStateFlow(false)
     val isEditMode: StateFlow<Boolean> = _isEditMode
 
-    // Отфильтрованные растения для поиска
-    private val _filteredPlants = MutableStateFlow<List<Plant>>(emptyList())
-    val filteredPlants: StateFlow<List<Plant>> = _filteredPlants
+    val filteredPlants: StateFlow<List<Plant>> = combine(plantState, _searchQuery) { state, query ->
+        if (state is UiState.Success) {
+            val plants = state.data
+            if (query.isBlank()) plants
+            else plants.filter { plant ->
+                plant.name.contains(query, ignoreCase = true) ||
+                        plant.type.contains(query, ignoreCase = true)
+            }
+        } else {
+            emptyList()
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         viewModelScope.launch {
@@ -45,24 +55,6 @@ class PlantViewModel(app: Application) : AndroidViewModel(app) {
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
-        filterPlants(query)
-    }
-
-    private fun filterPlants(query: String) {
-        val currentPlants = plantState.value
-        if (currentPlants is UiState.Success) {
-            val allPlants = currentPlants.data
-            if (query.isBlank()) {
-                _filteredPlants.value = allPlants
-            } else {
-                val lowerQuery = query.lowercase().trim()
-                val filtered = allPlants.filter { plant ->
-                    plant.name.lowercase().contains(lowerQuery) ||
-                            plant.type.lowercase().contains(lowerQuery)
-                }
-                _filteredPlants.value = filtered
-            }
-        }
     }
 
     fun enterEditMode() { _isEditMode.value = true }
