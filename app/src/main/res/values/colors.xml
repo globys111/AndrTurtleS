@@ -17,6 +17,8 @@
     <color name="dark_green">#416946</color>
     <color name="light_green">#C7D3BC</color>
     <color name="light_gray_transparent">#D9D9D9</color>
+    <color name="green_frame">#E9EED9</color>
+    <color name="tasks_choose_button">#CBD2A4</color>
 
 
 </resources>

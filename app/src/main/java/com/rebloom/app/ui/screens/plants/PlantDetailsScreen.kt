@@ -1,6 +1,7 @@
 package com.rebloom.app.ui.screens.plants
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -29,25 +30,33 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.rebloom.app.R
 import com.rebloom.app.domain.model.Plant
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PlantDetailsScreen(
     plant: Plant?,
     onBack: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    viewModel: PlantDetailsViewModel = viewModel()
 ) {
-    // ПРОСТО ПРОВЕРКА НА NULL И ВСЕ
-    if (plant == null) {
+    val livePlant by viewModel.plant.collectAsState()
+    val displayPlant = livePlant ?: plant
+
+    LaunchedEffect(plant?.id) {
+        plant?.id?.let { viewModel.load(it) }
+    }
+
+    if (displayPlant == null) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorResource(R.color.bg)),
+                .background(colorResource(R.color.green_frame)),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -59,48 +68,10 @@ fun PlantDetailsScreen(
         return
     }
 
+    val plant = displayPlant
+
     // ОСНОВНОЙ КОНТЕНТ
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(R.color.bg))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(76.dp)
-                .background(colorResource(R.color.bg).copy(alpha = 0.4f)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier.padding(start = 10.dp)
-            ) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = "Назад",
-                    tint = colorResource(R.color.text_primary)
-                )
-            }
-
-            IconButton(
-                onClick = onEdit,
-                modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(34.dp)
-                    .clip(CircleShape)
-                    .background(colorResource(R.color.text_secondary))
-            ) {
-                Icon(
-                    Icons.Outlined.Edit,
-                    contentDescription = "Редактировать",
-                    tint = colorResource(R.color.text_primary),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-
+    Box(modifier = Modifier.fillMaxSize().background(colorResource(R.color.green_frame))) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -122,7 +93,7 @@ fun PlantDetailsScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(colorResource(R.color.bg)),
+                            .background(Color.White),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -138,7 +109,7 @@ fun PlantDetailsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(colorResource(R.color.bg))
+                    .background(colorResource(R.color.green_frame))
                     .padding(horizontal = 20.dp)
             ) {
                 Text(
@@ -284,6 +255,45 @@ fun PlantDetailsScreen(
                 Spacer(modifier = Modifier.height(60.dp))
             }
         }
+
+        // Header overlay поверх фото
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(76.dp)
+                .background(colorResource(R.color.green_frame).copy(alpha = 0.4f))
+                .align(Alignment.TopStart),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier.padding(start = 10.dp)
+            ) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Назад",
+                    tint = colorResource(R.color.text_primary)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(colorResource(R.color.tasks_choose_button))
+                    .clickable { onEdit() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Outlined.Edit,
+                    contentDescription = "Редактировать",
+                    tint = colorResource(R.color.text_primary),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     }
 }
 
@@ -291,30 +301,49 @@ private fun calculatePlantAge(plantingDate: String): String {
     if (plantingDate.isEmpty()) return ""
 
     return try {
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        val plantDate = dateFormat.parse(plantingDate)
-        val today = Calendar.getInstance().time
+        val planted = try {
+            LocalDate.parse(plantingDate)
+        } catch (_: Exception) {
+            LocalDate.parse(plantingDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        }
 
-        val diffInMillis = today.time - plantDate.time
-        val years = TimeUnit.MILLISECONDS.toDays(diffInMillis) / 365
+        val today = LocalDate.now()
+        if (!planted.isBefore(today)) return "Недавно посажено"
+
+        val period = Period.between(planted, today)
+        val years = period.years
+        val months = period.months
 
         when {
-            years == 0L -> {
-                val months = TimeUnit.MILLISECONDS.toDays(diffInMillis) / 30
-                when {
-                    months == 0L -> "Недавно посажено"
-                    months == 1L -> "1 месяц"
-                    months in 2..4 -> "$months месяца"
-                    months in 5..11 -> "$months месяцев"
-                    else -> "$years лет"
-                }
-            }
-            years == 1L -> "1 год"
-            years in 2..4 -> "$years года"
-            else -> "$years лет"
+            years == 0 && months == 0 -> "Недавно посажено"
+            years == 0 -> "$months ${monthsForm(months)}"
+            months == 0 -> "$years ${yearsForm(years)}"
+            else -> "$years ${yearsForm(years)} $months ${monthsForm(months)}"
         }
-    } catch (e: Exception) {
-        "Неизвестный возраст"
+    } catch (_: Exception) {
+        ""
+    }
+}
+
+private fun yearsForm(n: Int): String {
+    val lastTwo = n % 100
+    val lastOne = n % 10
+    return when {
+        lastTwo in 11..19 -> "лет"
+        lastOne == 1 -> "год"
+        lastOne in 2..4 -> "года"
+        else -> "лет"
+    }
+}
+
+private fun monthsForm(n: Int): String {
+    val lastTwo = n % 100
+    val lastOne = n % 10
+    return when {
+        lastTwo in 11..19 -> "месяцев"
+        lastOne == 1 -> "месяц"
+        lastOne in 2..4 -> "месяца"
+        else -> "месяцев"
     }
 }
 
