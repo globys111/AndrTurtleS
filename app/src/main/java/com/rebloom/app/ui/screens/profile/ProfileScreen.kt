@@ -17,20 +17,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rebloom.app.R
+import com.rebloom.app.ui.theme.HomeFramePicture
+import com.rebloom.app.ui.theme.HomeTextDay
+import com.rebloom.app.ui.theme.HomeTextDow
+import com.rebloom.app.ui.theme.ProfileExit
 
 @Composable
 fun ProfileScreen(
     onBack: () -> Unit
 ) {
-    val sidePadding = runCatching { dimensionResource(R.dimen.screen_hpad) }.getOrElse { 30.dp }
-    val blockColor = Color(0xFFE9EED9)
+    val sidePadding = 30.dp
+    val blockColor = HomeFramePicture
 
     LazyColumn(
         modifier = Modifier
@@ -152,7 +155,7 @@ fun ProfileScreen(
                     onClick = { /* logout */ },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
+                    colors = ButtonDefaults.buttonColors(containerColor = ProfileExit)
                 ) {
                     Text(text = stringResource(R.string.logout), color = Color.White)
                 }
@@ -161,7 +164,7 @@ fun ProfileScreen(
                     onClick = { /* delete */ },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
+                    colors = ButtonDefaults.buttonColors(containerColor = ProfileExit)
                 ) {
                     Text(text = stringResource(R.string.delete_account), color = Color.White)
                 }
@@ -247,13 +250,13 @@ private fun SettingsRowItem(
             text = title,
             fontSize = 16.sp,
             modifier = Modifier.weight(1f),
-            color = Color(0xFF242823)
+            color = HomeTextDay
         )
 
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = Color(0x99242823)
+            tint = HomeTextDay
         )
     }
 }

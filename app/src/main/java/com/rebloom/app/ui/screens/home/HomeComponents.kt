@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +33,12 @@ import com.rebloom.app.domain.model.Plant
 import com.rebloom.app.domain.model.TaskOccurrence
 import com.rebloom.app.domain.model.TaskStatus
 import com.rebloom.app.domain.model.TaskType
+import com.rebloom.app.ui.theme.GreenFrame
+import com.rebloom.app.ui.theme.HomeCounterTasks
+import com.rebloom.app.ui.theme.HomeFramePicture
+import com.rebloom.app.ui.theme.HomeTextDay
+import com.rebloom.app.ui.theme.HomeTextDow
+import com.rebloom.app.ui.theme.TaskisEmpty
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
@@ -92,7 +100,7 @@ fun CalendarAndTasksCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFFE9EED9))
+            .background(GreenFrame)
             .padding(vertical = 10.dp)
     ) {
         Text(
@@ -125,7 +133,7 @@ fun CalendarAndTasksCard(
             Text(
                 text = emptyText,
                 fontSize = 14.sp,
-                color = Color(0x99242823),
+                color = TaskisEmpty,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -175,8 +183,8 @@ private fun DayChip(
                 .clickable { onClick() },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = dow, fontSize = 20.sp, color = Color(0xFF416946))
-            Text(text = day, fontSize = 20.sp, color = Color(0xFF242823))
+            Text(text = dow, fontSize = 20.sp, color = HomeTextDow)
+            Text(text = day, fontSize = 20.sp, color = HomeTextDay)
         }
     }
 }
@@ -215,7 +223,7 @@ private fun TaskRow(
                             .offset(y = (-2).dp)
                             .size(width = 42.dp, height = 13.dp)
                             .clip(RoundedCornerShape(999.dp))
-                            .background(Color(0xFF618262)),
+                            .background(Color.Black),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = badgeText, fontSize = 10.sp, color = Color.White)
@@ -265,14 +273,14 @@ fun DoneTodayAndMascot(
             Text(
                 text = "$done/$total",
                 fontSize = 48.sp,
-                color = Color(0xFF618262),
+                color = HomeCounterTasks,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
             Text(
                 text = stringResource(R.string.done_tasks_subtitle),
                 fontSize = 16.sp,
-                color = Color(0xFF416946),
+                color = HomeTextDow,
                 modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
             Text(
@@ -336,17 +344,11 @@ private fun PlantCard(
             .fillMaxWidth()
             .height(111.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFFE9EED9))
+            .background(HomeFramePicture)
             .clickable { onClick() }
             .padding(6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val context = LocalContext.current
-
-        // если вдруг в JSON будет "pic_plant_1.png" — уберём расширение
-        val safeName = plant.imageName.substringBeforeLast('.')
-        val plantRes = drawableIdByName(context, safeName)
-
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -354,11 +356,12 @@ private fun PlantCard(
                 .background(Color.White),
             contentAlignment = Alignment.Center
         ) {
-            if (plantRes != null) {
-                Image(
-                    painter = painterResource(plantRes),
+            if (plant.imageUrl != null) {
+                coil.compose.AsyncImage(
+                    model = plant.imageUrl,
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
             }
         }
@@ -387,7 +390,7 @@ private fun PlantCard(
                                     .offset(y = (-2).dp)
                                     .size(width = 42.dp, height = 13.dp)
                                     .clip(RoundedCornerShape(999.dp))
-                                    .background(Color(0xFF618262)),
+                                    .background(HomeCounterTasks),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(text = stringResource(R.string.today_badge), fontSize = 10.sp, color = Color.White)
@@ -402,8 +405,12 @@ private fun PlantCard(
 
 @Composable
 fun LoadingState() {
-    Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+    Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
+            Text(text = stringResource(R.string.loading_home))
+        }
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +29,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rebloom.app.R
 import com.rebloom.app.domain.model.Post
 import com.rebloom.app.ui.common.UiState
+import com.rebloom.app.ui.theme.CommunutyText
+import com.rebloom.app.ui.theme.GreenFrameMedsege
 
 @Composable
 fun CommunityScreen(
@@ -38,11 +41,11 @@ fun CommunityScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE9EED9))
+            .background(Color.White)
             .padding(16.dp)
     ) {
         Text(
-            "Сообщество",
+            CommunutyText,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -51,7 +54,11 @@ fun CommunityScreen(
         when (state) {
             is UiState.Loading -> {
                 Box(Modifier.fillMaxSize(), Alignment.Center) {
-                    CircularProgressIndicator()
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
+                        Text(text = stringResource(R.string.loading_posts))
+                    }
                 }
             }
             is UiState.Error -> {
@@ -93,7 +100,7 @@ fun PostItem(post: Post, depth: Int) {
         ) {
             Row(
                 modifier = Modifier
-                    .background(Color(0xFFDDE5C2))
+                    .background(GreenFrameMedsege)
                     .padding(8.dp),
                 verticalAlignment = Alignment.Top
             ) {
@@ -129,9 +136,6 @@ fun PostItem(post: Post, depth: Int) {
                     }
                 }
             }
-        }
-        post.replies.forEach { reply ->
-            PostItem(post = reply, depth = depth + 1)
         }
     }
 }

@@ -1,15 +1,53 @@
 package com.rebloom.app.data.mapper
 
-import com.rebloom.app.data.dto.PlantDto
 import com.rebloom.app.data.dto.TaskDto
 import com.rebloom.app.data.dto.UserDto
 import com.rebloom.app.data.dto.ArticleDto
 import com.rebloom.app.data.dto.PostDto
+import com.rebloom.app.data.dto.UserPlantDto
+import com.rebloom.app.data.dto.UserPlantWithCacheDto
+import com.rebloom.app.data.local.UserPlantEntity
 import com.rebloom.app.domain.model.*
 import java.time.LocalDate
 import java.time.LocalTime
 
-fun PlantDto.toDomain(): Plant = Plant(id, name, type, description, imageName)
+fun UserPlantEntity.toDomain(): Plant = Plant(
+    id           = id,
+    name         = nickname,
+    type         = plantTypeName,
+    description  = notes ?: "",
+    imageUrl     = customImageUrl,
+    plantingDate = acquiredDate ?: ""
+)
+
+fun UserPlantEntity.toDto(): UserPlantDto = UserPlantDto(
+    id             = id,
+    userId         = userId,
+    plantId        = plantId,
+    nickname       = nickname,
+    plantTypeName  = plantTypeName,
+    notes          = notes,
+    acquiredDate   = acquiredDate,
+    customImageUrl = customImageUrl,
+    room           = room,
+    lastWateredAt  = lastWateredAt,
+    createdAt      = createdAt
+)
+
+fun UserPlantWithCacheDto.toEntity(): UserPlantEntity = UserPlantEntity(
+    id             = id,
+    userId         = userId,
+    plantId        = plantId,
+    nickname       = nickname,
+    plantTypeName  = plantTypeName ?: plantsCache?.commonName ?: "",
+    notes          = notes,
+    acquiredDate   = acquiredDate,
+    customImageUrl = customImageUrl ?: plantsCache?.imageUrl,
+    room           = room,
+    lastWateredAt  = lastWateredAt,
+    createdAt      = createdAt,
+    isSynced       = true
+)
 
 fun UserDto.toDomain(): User = User(id, name, email, about, avatarImageName)
 
