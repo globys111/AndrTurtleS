@@ -17,7 +17,8 @@ fun UserPlantEntity.toDomain(): Plant = Plant(
     type         = plantTypeName,
     description  = notes ?: "",
     imageUrl     = customImageUrl,
-    plantingDate = acquiredDate ?: ""
+    plantingDate = acquiredDate ?: "",
+    wateringLevel = wateringLevel
 )
 
 fun UserPlantEntity.toDto(): UserPlantDto = UserPlantDto(
@@ -46,7 +47,8 @@ fun UserPlantWithCacheDto.toEntity(): UserPlantEntity = UserPlantEntity(
     room           = room,
     lastWateredAt  = lastWateredAt,
     createdAt      = createdAt,
-    isSynced       = true
+    isSynced       = true,
+    wateringLevel  = 5
 )
 
 fun UserDto.toDomain(): User = User(id, name, email, about, avatarImageName)

@@ -10,5 +10,6 @@ data class Plant(
     val type: String,
     val description: String,
     val imageUrl: String?,
-    val plantingDate: String = ""
+    val plantingDate: String = "",
+    val wateringLevel: Int
 ) : Parcelable

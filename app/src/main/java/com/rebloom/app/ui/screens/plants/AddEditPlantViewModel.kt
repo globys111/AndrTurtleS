@@ -68,7 +68,8 @@ class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
                     notes         = s.description,
                     acquiredDate  = s.dateIso,
                     plantId       = null,
-                    plantTypeName = s.plantType
+                    plantTypeName = s.plantType,
+                    wateringLevel = 5
                 )
                 Log.d(TAG, "create: addPlant done id=${entity.id}, starting uploadPhotoAndSync")
                 val result = withTimeoutOrNull(15_000L) { repo.uploadPhotoAndSync(entity, s.newPhotoUri) }
@@ -92,7 +93,8 @@ class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
                     nickname      = s.name,
                     notes         = s.description,
                     acquiredDate  = s.dateIso,
-                    plantTypeName = s.plantType
+                    plantTypeName = s.plantType,
+                    wateringLevel = 5
                 )
                 Log.d(TAG, "update: updatePlant done, starting uploadPhotoAndSync")
                 val result = withTimeoutOrNull(15_000L) { repo.uploadPhotoAndSync(entity, s.newPhotoUri) }

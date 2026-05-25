@@ -16,5 +16,6 @@ data class UserPlantEntity(
     val room: String?,
     val lastWateredAt: String?,
     val createdAt: String,
-    val isSynced: Boolean = false
+    val isSynced: Boolean = false,
+    val wateringLevel: Int
 )

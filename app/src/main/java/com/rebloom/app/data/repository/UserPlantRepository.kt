@@ -39,7 +39,8 @@ class UserPlantRepository(private val context: Context) {
         notes: String,
         acquiredDate: String,
         plantId: String?,
-        plantTypeName: String
+        plantTypeName: String,
+        wateringLevel: Int
     ): UserPlantEntity {
         val userId = auth.currentUserOrNull()?.id ?: error("Not logged in")
         val id = UUID.randomUUID().toString()
@@ -55,7 +56,8 @@ class UserPlantRepository(private val context: Context) {
             room           = null,
             lastWateredAt  = null,
             createdAt      = Instant.now().toString(),
-            isSynced       = false
+            isSynced       = false,
+            wateringLevel  = wateringLevel
         )
         dao.upsert(entity)
         SyncPlantsWorker.enqueue(context)
@@ -67,7 +69,8 @@ class UserPlantRepository(private val context: Context) {
         nickname: String,
         notes: String,
         acquiredDate: String,
-        plantTypeName: String
+        plantTypeName: String,
+        wateringLevel: Int
     ): UserPlantEntity {
         Log.d(TAG, "updatePlant: looking up id=$plantId")
         val existing = dao.getById(plantId) ?: error("Plant not found: $plantId")
@@ -77,7 +80,8 @@ class UserPlantRepository(private val context: Context) {
             notes         = notes.ifEmpty { null },
             acquiredDate  = acquiredDate.ifEmpty { null },
             plantTypeName = plantTypeName,
-            isSynced      = false
+            isSynced      = false,
+            wateringLevel  = wateringLevel
         )
         dao.upsert(updated)
         SyncPlantsWorker.enqueue(context)
