@@ -27,9 +27,9 @@ import com.rebloom.app.ui.screens.auth.LoginScreen
 import com.rebloom.app.ui.screens.auth.RegisterScreen
 import com.rebloom.app.ui.screens.community.CommunityScreen
 import com.rebloom.app.ui.screens.home.HomeScreen
+import com.rebloom.app.ui.screens.plants.AddEditPlantScreen
 import com.rebloom.app.ui.screens.plants.PlantDetailsScreen
 import com.rebloom.app.ui.screens.plants.PlantsScreen
-import com.rebloom.app.ui.screens.plants.add_plants.AddPlantsScreen
 import com.rebloom.app.ui.screens.profile.ProfileScreen
 import com.rebloom.app.ui.screens.profile.EditProfileScreen
 import com.rebloom.app.ui.screens.tasks.TasksScreen
@@ -46,7 +46,6 @@ fun AppRoot(deepLinkUri: Uri? = null,
     //val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
     val context = LocalContext.current
-
     // Проверяем сохранённую сессию при старте (только если нет deep link)
     LaunchedEffect(Unit) {
         if (deepLinkUri == null) authViewModel.checkSession()
@@ -71,6 +70,7 @@ fun AppRoot(deepLinkUri: Uri? = null,
     if (authState.isInitializing) return
 
     // Централизованная навигация на главный экран при входе
+// Централизованная навигация на главный экран при входе
     LaunchedEffect(authState.isLoggedIn) {
         if (authState.isLoggedIn) {
             val stack = navController.currentBackStack.value.map { it.destination.route }
@@ -225,10 +225,11 @@ fun AppRoot(deepLinkUri: Uri? = null,
                     if (plant != null) {
                         PlantDetailsScreen(
                             plant = plant,
-                            onBack = {
-                                navController.popBackStack()
-                            },
-                            onEdit = {}
+                            onBack = { navController.popBackStack() },
+                            onEdit = {
+                                navController.currentBackStackEntry?.savedStateHandle?.set("plant", plant)
+                                navController.navigate(MainDestinations.EditPlant.route)
+                            }
                         )
                     } else {
                         LaunchedEffect(Unit) { navController.popBackStack() }
@@ -252,9 +253,24 @@ fun AppRoot(deepLinkUri: Uri? = null,
                 }
 
                 composable(MainDestinations.AddPlant.route) {
-                    AddPlantsScreen(
+                    AddEditPlantScreen(
+                        plant   = null,
                         onClose = { navController.popBackStack() }
                     )
+                }
+
+                composable(MainDestinations.EditPlant.route) {
+                    val plant = remember {
+                        navController.previousBackStackEntry?.savedStateHandle?.get<Plant>("plant")
+                    }
+                    if (plant != null) {
+                        AddEditPlantScreen(
+                            plant   = plant,
+                            onClose = { navController.popBackStack() }
+                        )
+                    } else {
+                        LaunchedEffect(Unit) { navController.popBackStack() }
+                    }
                 }
 
                 composable(MainDestinations.Articles.route) {

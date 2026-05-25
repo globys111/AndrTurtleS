@@ -379,6 +379,13 @@ private fun PlantCard(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
+            } else {
+                androidx.compose.material3.Icon(
+                    painter = painterResource(R.drawable.ic_plants_selected),
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = colorResource(R.color.text_primary)
+                )
             }
         }
 
