@@ -46,7 +46,6 @@ fun AppRoot(deepLinkUri: Uri? = null,
     //val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
     val context = LocalContext.current
-
     // Проверяем сохранённую сессию при старте (только если нет deep link)
     LaunchedEffect(Unit) {
         if (deepLinkUri == null) authViewModel.checkSession()
@@ -74,8 +73,17 @@ fun AppRoot(deepLinkUri: Uri? = null,
 // Централизованная навигация на главный экран при входе
     LaunchedEffect(authState.isLoggedIn) {
         if (authState.isLoggedIn) {
+            val stack = navController.currentBackStack.value.map { it.destination.route }
+            Log.d(NAV_TAG, "isLoggedIn=true → navigate MAIN, currentStack=$stack")
             navController.navigate(MAIN_ROUTE) {
-                popUpTo(0) { inclusive = true }   // полностью очищаем стек
+                // Убираем всё что есть в стеке, кроме корня
+                stack.filterNotNull().forEach { route ->
+                    Log.d(NAV_TAG, "popping route=$route")
+                }
+                val rootEntry = navController.currentBackStack.value.firstOrNull()
+                if (rootEntry != null) {
+                    popUpTo(rootEntry.destination.id) { inclusive = false }
+                }
                 launchSingleTop = true
             }
         }
