@@ -2,6 +2,7 @@ package com.rebloom.app.domain.usecase
 
 import com.rebloom.app.domain.model.*
 import java.time.LocalDate
+import java.time.LocalTime
 
 object TaskScheduler {
 
@@ -11,6 +12,32 @@ object TaskScheduler {
      * - показывать задачи на выбранную дату
      * - искать просроченные
      */
+
+    fun generateWateringDefinitions(
+        plants: List<Plant>,
+        startDate: LocalDate = LocalDate.now()
+    ): List<TaskDefinition> {
+        return plants.flatMap { plant ->
+            val dates = WateringScheduleConverter.generateWateringDates(
+                wateringLevel = plant.wateringLevel,
+                startDate = startDate,
+                monthsAhead = 3
+            )
+            dates.map { date ->
+                TaskDefinition(
+                    id = "watering_${plant.id}_${date}",
+                    plantId = plant.id,
+                    type = TaskType.WATER,
+                    isRepeating = false,
+                    startDate = null,
+                    intervalDays = null,
+                    oneTimeDate = date,
+                    time = LocalTime.of(8, 0),
+                    completedDates = emptySet()
+                )
+            }
+        }
+    }
     fun generateOccurrences(
         defs: List<TaskDefinition>,
         today: LocalDate,

@@ -28,22 +28,27 @@ class MascotWidgetReceiver : AppWidgetProvider() {
             appWidgetId: Int
         ) {
             val prefs = context.getSharedPreferences("task_prefs", Context.MODE_PRIVATE)
-            val completedSet = prefs.getStringSet("completed_ids", emptySet()) ?: emptySet()
-            val count = completedSet.size
-            val totalTasks = prefs.getInt("total_tasks", 0)
+            val todayTotal = prefs.getInt("today_total", 0)
+            val todayCompleted = prefs.getInt("today_completed", 0)
+
             val views = RemoteViews(context.packageName, R.layout.default_widget_model)
-            val bgRes = if (count == 0) {
-                R.drawable.dont_ok_widget
-            } else if (count < totalTasks) {
-                R.drawable.norm_widget
-            } else {
-                R.drawable.ok_widget
+
+            val bgRes = when {
+                todayTotal == 0 -> R.drawable.dont_ok_widget
+                todayCompleted == 0 -> R.drawable.dont_ok_widget
+                todayCompleted < todayTotal -> R.drawable.norm_widget
+                else -> R.drawable.ok_widget
             }
             views.setImageViewResource(R.id.widget_background, bgRes)
-            views.setTextViewText(R.id.widget_text, context.getString(R.string.widget, count, totalTasks))
+            views.setTextViewText(
+                R.id.widget_text,
+                context.getString(R.string.widget, todayCompleted, todayTotal)
+            )
+
             val intent = Intent(context, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(
-                context, 0, intent, PendingIntent.FLAG_IMMUTABLE
+                context, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             views.setOnClickPendingIntent(R.id.widget_background, pendingIntent)
 

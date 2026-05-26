@@ -1,13 +1,15 @@
 package com.rebloom.app.ui.screens.tasks
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -16,127 +18,79 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rebloom.app.R
-import com.rebloom.app.domain.model.TaskDefinition
-import com.rebloom.app.domain.model.TaskType
-import com.rebloom.app.ui.common.UiState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import com.rebloom.app.domain.model.TaskOccurrence
+
+import com.rebloom.app.ui.components.taskIconRes
 import com.rebloom.app.ui.theme.HomeFramePicture
-import com.rebloom.app.ui.theme.Lighting
 import com.rebloom.app.ui.theme.Tasks
 import com.rebloom.app.ui.theme.TasksChooseBotton
-import com.rebloom.app.ui.theme.Transplanting
-import com.rebloom.app.ui.theme.Watering
 
 @Composable
 fun TasksScreen(
-    onOverdueClick: () -> Unit,
+    onOverdueClick: () -> Unit,   // можно убрать, если не нужен
     viewModel: TaskViewModel = viewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val tasks by viewModel.filteredTasks.collectAsStateWithLifecycle()
     val completedIds by viewModel.completedIds.collectAsStateWithLifecycle()
+    val filter by viewModel.filter.collectAsStateWithLifecycle()
 
-    when (val state = uiState) {
-        UiState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator()
-                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
-                    Text(text = stringResource(R.string.loading_tasks))
-                }
-            }
-        }
-
-        is UiState.Error -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Ошибка: ${state.message}",
-                    color = MaterialTheme.colorScheme.error
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Переключатели фильтров
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(Color.White, RoundedCornerShape(20.dp))
+                .padding(4.dp)
+        ) {
+            FilterChip(
+                selected = filter == TaskViewModel.TaskFilter.LIST,
+                onClick = { viewModel.setFilter(TaskViewModel.TaskFilter.LIST) },
+                label = { Text("Список") },
+                modifier = Modifier.weight(1f),
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = TasksChooseBotton
                 )
-            }
+            )
+            FilterChip(
+                selected = filter == TaskViewModel.TaskFilter.OVERDUE,
+                onClick = { viewModel.setFilter(TaskViewModel.TaskFilter.OVERDUE) },
+                label = { Text("Просрочено") },
+                modifier = Modifier.weight(1f)
+            )
+            FilterChip(
+                selected = filter == TaskViewModel.TaskFilter.ALL,
+                onClick = { viewModel.setFilter(TaskViewModel.TaskFilter.ALL) },
+                label = { Text("Все") },
+                modifier = Modifier.weight(1f)
+            )
         }
 
-        is UiState.Success -> {
-            val tasks = state.data
-
+        if (tasks.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Нет задач", color = Color.Gray)
+            }
+        } else {
+            Text(
+                text = Tasks,   // строка "Задачи"
+                modifier = Modifier.padding(start = 24.dp, top = 8.dp, bottom = 4.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                item {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .background(Color.White, RoundedCornerShape(20.dp))
-                            .padding(4.dp)
-                    ) {
-                        FilterChip(
-                            selected = true,
-                            onClick = {},
-                            label = { Text("Список") },
-                            modifier = Modifier.weight(1f),
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = TasksChooseBotton
-                            )
-                        )
-                        FilterChip(
-                            selected = false,
-                            onClick = onOverdueClick,
-                            label = { Text("Просрочено") },
-                            modifier = Modifier.weight(1f)
-                        )
-                        FilterChip(
-                            selected = false,
-                            onClick = {},
-                            label = { Text("Все") },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-
-                item {
-                    Text(
-                        text = Tasks,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, top = 8.dp, bottom = 4.dp),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                items(tasks, key = { "${it.definitionId}_${it.date}" }) { task ->
+                    val isCompleted = completedIds.contains("${task.definitionId}_${task.date}")
+                    TaskCard(
+                        task = task,
+                        isCompleted = isCompleted,
+                        onToggle = { viewModel.toggleTaskCompletion(task) }
                     )
-                }
-
-                items(tasks) { task ->
-                    val taskId = task.id ?: task.hashCode().toString()
-                    val isCompleted = completedIds.contains(taskId)
-
-                    TaskCard(task = task, isCompleted = isCompleted, onToggle = { viewModel.toggleTaskCompletion(task) })
                 }
             }
         }
@@ -144,7 +98,7 @@ fun TasksScreen(
 }
 
 @Composable
-fun TaskCard(task: TaskDefinition, isCompleted: Boolean, onToggle: () -> Unit) {
+fun TaskCard(task: TaskOccurrence, isCompleted: Boolean, onToggle: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,8 +112,9 @@ fun TaskCard(task: TaskDefinition, isCompleted: Boolean, onToggle: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Иконка задачи через общую функцию
             Icon(
-                painter = painterResource(id = task.type.toIconRes()),
+                painter = painterResource(taskIconRes(task.type, task.status, isCompleted)),
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
                 tint = Color.Unspecified
@@ -171,13 +126,12 @@ fun TaskCard(task: TaskDefinition, isCompleted: Boolean, onToggle: () -> Unit) {
                     .padding(horizontal = 12.dp)
             ) {
                 Text(
-                    text = task.type.toTitle(),
+                    text = "Полив",   // или R.string.task_water
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    //text = "Каждые ${task.intervalDays} дня",
-                    text = "Каждые 3 дня",
+                    text = "${task.date}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
@@ -185,20 +139,8 @@ fun TaskCard(task: TaskDefinition, isCompleted: Boolean, onToggle: () -> Unit) {
 
             Checkbox(
                 checked = isCompleted,
-                onCheckedChange = {onToggle()}
+                onCheckedChange = { onToggle() }
             )
         }
     }
-}
-
-fun TaskType.toTitle(): String = when (this) {
-    TaskType.WATER -> Watering
-    TaskType.REPOT -> Transplanting
-    TaskType.LIGHT -> Lighting
-}
-
-fun TaskType.toIconRes(): Int = when (this) {
-    TaskType.WATER -> R.drawable.ic_water_today
-    TaskType.REPOT -> R.drawable.ic_replant_today
-    TaskType.LIGHT -> R.drawable.ic_light_overdue
 }

@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import com.rebloom.app.data.repository.PlantCareRepository
 
 private const val TAG = "AddEditVM"
+private val careRepo = PlantCareRepository()
 
 class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -62,14 +64,14 @@ class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
                 val s = _uiState.value
-                Log.d(TAG, "create: name=${s.name} newPhotoUri=${s.newPhotoUri}")
+                val wateringLevel = careRepo.getWateringLevel(s.plantType.trim())
                 val entity = repo.addPlant(
                     nickname      = s.name,
                     notes         = s.description,
                     acquiredDate  = s.dateIso,
                     plantId       = null,
                     plantTypeName = s.plantType,
-                    wateringLevel = 5
+                    wateringLevel = wateringLevel
                 )
                 Log.d(TAG, "create: addPlant done id=${entity.id}, starting uploadPhotoAndSync")
                 val result = withTimeoutOrNull(15_000L) { repo.uploadPhotoAndSync(entity, s.newPhotoUri) }
@@ -87,14 +89,14 @@ class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
                 val s = _uiState.value
-                Log.d(TAG, "update: plantId=$plantId newPhotoUri=${s.newPhotoUri}")
+                val wateringLevel = careRepo.getWateringLevel(s.plantType.trim())
                 val entity = repo.updatePlant(
                     plantId       = plantId,
                     nickname      = s.name,
                     notes         = s.description,
                     acquiredDate  = s.dateIso,
                     plantTypeName = s.plantType,
-                    wateringLevel = 5
+                    wateringLevel = wateringLevel
                 )
                 Log.d(TAG, "update: updatePlant done, starting uploadPhotoAndSync")
                 val result = withTimeoutOrNull(15_000L) { repo.uploadPhotoAndSync(entity, s.newPhotoUri) }

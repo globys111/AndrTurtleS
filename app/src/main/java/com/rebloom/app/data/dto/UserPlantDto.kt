@@ -16,6 +16,7 @@ data class UserPlantDto(
     val room: String? = null,
     @SerialName("last_watered_at")   val lastWateredAt: String? = null,
     @SerialName("created_at")        val createdAt: String,
+    @SerialName("watering_level")    val wateringLevel: Int? = null
 )
 
 @Serializable
@@ -32,6 +33,7 @@ data class UserPlantWithCacheDto(
     @SerialName("last_watered_at")   val lastWateredAt: String? = null,
     @SerialName("created_at")        val createdAt: String,
     @SerialName("plants_cache")      val plantsCache: PlantCacheRefDto? = null,
+    @SerialName("watering_level")    val wateringLevel: Int? = null
 )
 
 @Serializable
