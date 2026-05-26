@@ -64,7 +64,7 @@ class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
                 val s = _uiState.value
-                val wateringLevel = careRepo.getWateringLevel(s.plantType)
+                val wateringLevel = careRepo.getWateringLevel(s.plantType.trim())
                 val entity = repo.addPlant(
                     nickname      = s.name,
                     notes         = s.description,
@@ -89,7 +89,7 @@ class AddEditPlantViewModel(app: Application) : AndroidViewModel(app) {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
                 val s = _uiState.value
-                val wateringLevel = careRepo.getWateringLevel(s.plantType)
+                val wateringLevel = careRepo.getWateringLevel(s.plantType.trim())
                 val entity = repo.updatePlant(
                     plantId       = plantId,
                     nickname      = s.name,
