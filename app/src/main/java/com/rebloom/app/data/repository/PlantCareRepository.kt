@@ -13,7 +13,7 @@ data class PlantCacheRow(
 
 @Serializable
 data class GrowthData(
-    val care_parameters: CareParams? = null   // ← верхний уровень содержит care_parameters
+    val care_parameters: CareParams? = null
 )
 
 @Serializable
