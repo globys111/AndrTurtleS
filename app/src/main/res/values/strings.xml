@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Plant App</string>
+    <string name="app_name">Rebloom</string>
 
     <!-- Greetings -->
     <string name="greeting_morning">Доброе утро</string>

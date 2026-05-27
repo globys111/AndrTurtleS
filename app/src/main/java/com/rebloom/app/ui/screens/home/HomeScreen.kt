@@ -30,6 +30,7 @@ fun HomeScreen(
     LaunchedEffect(Unit) { vm.load() }
     val profileState by profileViewModel.uiState.collectAsState()
     val state by vm.state.collectAsState()
+    val completedIds by vm.completedIds.collectAsState()
     val side = dimensionResource(R.dimen.screen_hpad)
 
     Column(
@@ -60,7 +61,7 @@ fun HomeScreen(
                     TaskScheduler.tasksForDate(data.allOccurrences, data.today)
                 }
 
-                val doneToday = tasksToday.count { it.isCompleted }
+                val doneToday = tasksToday.count { completedIds.contains(it.completionKey) }
                 val totalToday = tasksToday.size.coerceAtLeast(1)
 
                 val monthName = data.selectedDate.month.getDisplayName(TextStyle.FULL_STANDALONE, Locale("ru"))
@@ -97,7 +98,9 @@ fun HomeScreen(
                             onSelectDate = vm::selectDate,
                             tasks = tasksForSelected,
                             plantById = { id -> plantsById[id] },
-                            emptyText = stringResource(R.string.no_tasks)
+                            emptyText = stringResource(R.string.no_tasks),
+                            completedIds = completedIds,
+                            onToggle = vm::toggleTaskCompletion
                         )
                     }
 
@@ -115,7 +118,8 @@ fun HomeScreen(
                             topTasksForPlant = { plantId ->
                                 TaskScheduler.top3ForPlant(data.allOccurrences, plantId)
                             },
-                            onPlantClick = onOpenPlant
+                            onPlantClick = onOpenPlant,
+                            completedIds = completedIds
                         )
                     }
                 }

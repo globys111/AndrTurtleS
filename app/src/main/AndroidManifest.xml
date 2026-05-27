@@ -52,6 +52,10 @@
             android:resource="@xml/default_widget" />
         </receiver>
 
+        <meta-data
+            android:name="developer_team"
+            android:value="AndrTurtleS" />
+
     </application>
 
 </manifest>

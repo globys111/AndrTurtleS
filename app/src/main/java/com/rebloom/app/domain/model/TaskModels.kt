@@ -27,4 +27,6 @@ data class TaskOccurrence(
     val time: LocalTime,
     val isCompleted: Boolean,
     val status: TaskStatus
-)
+) {
+    val completionKey: String get() = "${definitionId}_${date}"
+}
