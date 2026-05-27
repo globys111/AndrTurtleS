@@ -402,7 +402,7 @@ private fun PlantCard(
 fun LoadingState() {
     Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = HomeFramePicture)
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
             Text(text = stringResource(R.string.loading_home))
         }

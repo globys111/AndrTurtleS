@@ -26,6 +26,9 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
 
     val completedIds: StateFlow<Set<String>> = TaskCompletionStore.completedIds
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
+
     init {
         viewModelScope.launch { load() }
         viewModelScope.launch {
@@ -63,6 +66,30 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
                 )
             } catch (e: Exception) {
                 _state.value = UiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            try {
+                plantRepo.syncFromRemote()
+                val plants = plantRepo.observePlants().first()
+                val current = _state.value
+                if (current is UiState.Success) {
+                    val today = LocalDate.now()
+                    val defs = TaskScheduler.generateWateringDefinitions(plants, today)
+                    val occurrences = TaskScheduler.generateOccurrences(defs, today)
+                    _state.value = UiState.Success(
+                        current.data.copy(plants = plants, allOccurrences = occurrences)
+                    )
+                } else {
+                    load()
+                }
+            } catch (_: Exception) {
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

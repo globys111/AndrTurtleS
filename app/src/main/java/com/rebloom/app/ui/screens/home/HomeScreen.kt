@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -20,6 +22,7 @@ import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onOpenProfile: () -> Unit,
@@ -31,6 +34,7 @@ fun HomeScreen(
     val profileState by profileViewModel.uiState.collectAsState()
     val state by vm.state.collectAsState()
     val completedIds by vm.completedIds.collectAsState()
+    val isRefreshing by vm.isRefreshing.collectAsState()
     val side = dimensionResource(R.dimen.screen_hpad)
 
     Column(
@@ -75,52 +79,56 @@ fun HomeScreen(
                     (-3..3).map { data.selectedDate.plusDays(it.toLong()) }
                 }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 12.dp)
+                HomeTopBar(
+                    greetingText = greeting,
+                    hasNewNotifications = true,
+                    avatarUrl = profileState.avatarUrl,
+                    onProfileClick = onOpenProfile,
+                    onNotificationsClick = { }
+                )
+
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = vm::refresh,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    item {
-                        HomeTopBar(
-                            greetingText = greeting,
-                            hasNewNotifications = true,
-                            avatarUrl = profileState.avatarUrl,
-                            onProfileClick = onOpenProfile,
-                            onNotificationsClick = { /* позже */ }
-                        )
-                    }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 12.dp)
+                    ) {
+                        item {
+                            CalendarAndTasksCard(
+                                monthTitle = monthTitle,
+                                days = days,
+                                selectedDate = data.selectedDate,
+                                onSelectDate = vm::selectDate,
+                                tasks = tasksForSelected,
+                                plantById = { id -> plantsById[id] },
+                                emptyText = stringResource(R.string.no_tasks),
+                                completedIds = completedIds,
+                                onToggle = vm::toggleTaskCompletion
+                            )
+                        }
 
-                    item {
-                        CalendarAndTasksCard(
-                            monthTitle = monthTitle,
-                            days = days,
-                            selectedDate = data.selectedDate,
-                            onSelectDate = vm::selectDate,
-                            tasks = tasksForSelected,
-                            plantById = { id -> plantsById[id] },
-                            emptyText = stringResource(R.string.no_tasks),
-                            completedIds = completedIds,
-                            onToggle = vm::toggleTaskCompletion
-                        )
-                    }
+                        item {
+                            DoneTodayAndMascot(
+                                done = doneToday,
+                                total = totalToday
+                            )
+                        }
 
-                    item {
-                        DoneTodayAndMascot(
-                            done = doneToday,
-                            total = totalToday
-                        )
-                    }
-
-                    item {
-                        PlantsSection(
-                            title = stringResource(R.string.plants_title),
-                            plants = data.plants.take(3),
-                            topTasksForPlant = { plantId ->
-                                TaskScheduler.top3ForPlant(data.allOccurrences, plantId)
-                            },
-                            onPlantClick = onOpenPlant,
-                            completedIds = completedIds
-                        )
+                        item {
+                            PlantsSection(
+                                title = stringResource(R.string.plants_title),
+                                plants = data.plants.take(3),
+                                topTasksForPlant = { plantId ->
+                                    TaskScheduler.top3ForPlant(data.allOccurrences, plantId)
+                                },
+                                onPlantClick = onOpenPlant,
+                                completedIds = completedIds
+                            )
+                        }
                     }
                 }
             }
