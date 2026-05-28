@@ -189,51 +189,6 @@ fun LoginScreen(
                 color = Color.Gray,
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 32.dp)
-            ) {
-                Divider(modifier = Modifier.weight(1f), color = Color.LightGray)
-                Text(
-                    text = stringResource(R.string.auth_or_login_with),
-                    color = Color.Gray,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-                Divider(modifier = Modifier.weight(1f), color = Color.LightGray)
-            }
-
-            Row(
-                modifier = Modifier.padding(top = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                SocialCircleButton(R.drawable.ic_vk, stringResource(R.string.auth_social_vk))
-                SocialCircleButton(R.drawable.ic_google, stringResource(R.string.auth_social_google))
-                SocialCircleButton(R.drawable.ic_more, stringResource(R.string.auth_social_more))
-            }
         }
-    }
-}
-
-@Composable
-fun SocialCircleButton(iconRes: Int, contentDescription: String) {
-    val context = LocalContext.current
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(Color(0xFFE6E8DB))
-            .clickable {
-                Toast.makeText(context, contentDescription, Toast.LENGTH_SHORT).show()
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = contentDescription,
-            modifier = Modifier.size(24.dp),
-            tint = Color.Unspecified
-        )
     }
 }

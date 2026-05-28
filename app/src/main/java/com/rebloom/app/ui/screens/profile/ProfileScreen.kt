@@ -133,42 +133,6 @@ fun ProfileScreen(
         }
 
         item {
-            SettingsGroupCard(
-                titleRes = R.string.section_general,
-                items = listOf(
-                    SettingsRow(R.drawable.ic_account_settings, R.string.action_account) { },
-                    SettingsRow(R.drawable.ic_notification_settings, R.string.action_notifications) { },
-                    SettingsRow(R.drawable.ic_private_settings, R.string.action_privacy) { }
-                ),
-                blockColor = blockColor
-            )
-        }
-
-        item {
-            SettingsGroupCard(
-                titleRes = R.string.section_system,
-                items = listOf(
-                    SettingsRow(R.drawable.ic_language_settings, R.string.action_language) { },
-                    SettingsRow(R.drawable.ic_theme_settings, R.string.action_theme) { },
-                    SettingsRow(R.drawable.ic_permissions_settings, R.string.action_permissions) { }
-                ),
-                blockColor = blockColor
-            )
-        }
-
-        item {
-            SettingsGroupCard(
-                titleRes = R.string.section_more,
-                items = listOf(
-                    SettingsRow(R.drawable.ic_feedback, R.string.action_reviews) { },
-                    SettingsRow(R.drawable.ic_faq, R.string.action_faq) { },
-                    SettingsRow(R.drawable.ic_policy, R.string.action_policy) { }
-                ),
-                blockColor = blockColor
-            )
-        }
-
-        item {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)

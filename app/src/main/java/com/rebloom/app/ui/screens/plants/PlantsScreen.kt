@@ -328,20 +328,6 @@ fun PlantsScreen(
                     horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.button_gap)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(dimensionResource(R.dimen.filter_button_size))
-                            .clip(CircleShape)
-                            .background(colorResource(R.color.light_gray_transparent)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_filter),
-                            contentDescription = stringResource(R.string.filter_button),
-                            modifier = Modifier.size(dimensionResource(R.dimen.filter_icon_size)),
-                            tint = colorResource(R.color.text_primary)
-                        )
-                    }
 
                     if (!isEditMode) {
                         Box(

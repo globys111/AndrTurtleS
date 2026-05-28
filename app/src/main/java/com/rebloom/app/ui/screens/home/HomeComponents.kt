@@ -51,8 +51,7 @@ fun HomeTopBar(
     greetingText: String,
     hasNewNotifications: Boolean,
     avatarUrl: String?,                                // <-- добавить параметр
-    onProfileClick: () -> Unit,
-    onNotificationsClick: () -> Unit
+    onProfileClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -89,15 +88,6 @@ fun HomeTopBar(
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
-        )
-
-        val bellRes = if (hasNewNotifications) R.drawable.ic_bell_new else R.drawable.ic_bell_no_new
-        Image(
-            painter = painterResource(bellRes),
-            contentDescription = null,
-            modifier = Modifier
-                .size(30.dp)
-                .clickable { onNotificationsClick() }
         )
     }
 }

@@ -17,15 +17,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
-import com.rebloom.app.domain.model.Article
 import com.rebloom.app.domain.model.Plant
-import com.rebloom.app.ui.screens.articles.ArticleDetailsScreen
-import com.rebloom.app.ui.screens.articles.ArticlesScreen
 import com.rebloom.app.ui.screens.auth.AuthViewModel
 import com.rebloom.app.ui.screens.auth.ForgotPasswordScreen
 import com.rebloom.app.ui.screens.auth.LoginScreen
 import com.rebloom.app.ui.screens.auth.RegisterScreen
-import com.rebloom.app.ui.screens.community.CommunityScreen
 import com.rebloom.app.ui.screens.home.HomeScreen
 import com.rebloom.app.ui.screens.plants.AddEditPlantScreen
 import com.rebloom.app.ui.screens.plants.PlantDetailsScreen
@@ -273,29 +269,6 @@ fun AppRoot(deepLinkUri: Uri? = null,
                     }
                 }
 
-                composable(MainDestinations.Articles.route) {
-                    ArticlesScreen(
-                        onArticleClick = { article ->
-                            navController.currentBackStackEntry?.savedStateHandle?.set("article", article)
-                            navController.navigate(MainDestinations.ArticleDetails.route)
-                        }
-                    )
-                }
-
-                composable(MainDestinations.ArticleDetails.route) {
-                    val article = remember {
-                        navController.previousBackStackEntry?.savedStateHandle?.get<Article>("article")
-                    }
-                    if (article != null) {
-                        ArticleDetailsScreen(article = article, onBack = { navController.popBackStack() })
-                    } else {
-                        LaunchedEffect(Unit) { navController.popBackStack() }
-                    }
-                }
-
-                composable(MainDestinations.Community.route) {
-                    CommunityScreen()
-                }
                 composable(MainDestinations.EditProfile.route) {
                     EditProfileScreen(onBack = { navController.popBackStack() })
                 }
