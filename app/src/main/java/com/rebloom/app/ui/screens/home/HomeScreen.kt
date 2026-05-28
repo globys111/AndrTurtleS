@@ -91,7 +91,7 @@ fun HomeScreen(
                     hasNewNotifications = true,
                     avatarUrl = profileState.avatarUrl,
                     onProfileClick = onOpenProfile,
-                    onNotificationsClick = { }
+                    //onNotificationsClick = { }
                 )
 
                 PullToRefreshBox(

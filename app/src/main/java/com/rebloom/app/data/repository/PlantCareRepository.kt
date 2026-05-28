@@ -37,10 +37,10 @@ class PlantCareRepository {
                 ?.care_parameters
                 ?.base_watering_level
             Log.d("PlantCare", "Extracted level: $level")
-            level ?: 3   // fallback
+            level ?: 0
         } catch (e: Exception) {
             Log.e("PlantCare", "Error for '$cleanType'", e)
-            3
+            0
         }
     }
 }
