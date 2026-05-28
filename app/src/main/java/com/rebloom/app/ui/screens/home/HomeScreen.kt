@@ -93,7 +93,8 @@ fun HomeScreen(
                 HomeTopBar(
                     greetingText = greeting,
                     avatarUrl = profileState.avatarUrl,
-                    onProfileClick = onOpenProfile
+                    onProfileClick = onOpenProfile,
+                    //onNotificationsClick = { }
                 )
 
                 val pullState = rememberPullToRefreshState()
