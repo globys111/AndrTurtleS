@@ -49,8 +49,7 @@ import coil.compose.AsyncImage
 @Composable
 fun HomeTopBar(
     greetingText: String,
-    hasNewNotifications: Boolean,
-    avatarUrl: String?,                                // <-- добавить параметр
+    avatarUrl: String?,
     onProfileClick: () -> Unit
 ) {
     Row(
@@ -89,6 +88,7 @@ fun HomeTopBar(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
         )
+
     }
 }
 
