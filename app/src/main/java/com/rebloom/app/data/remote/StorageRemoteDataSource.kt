@@ -58,6 +58,28 @@ class StorageRemoteDataSource(private val context: Context) {
         }
     }
 
+    suspend fun downloadToLocal(url: String, plantId: String): Boolean {
+        return try {
+            val dir = File(context.filesDir, "plant_photos").apply { mkdirs() }
+            val file = File(dir, "$plantId.jpg")
+            val connection = java.net.URL(url).openConnection()
+            connection.connectTimeout = 10_000
+            connection.readTimeout = 15_000
+            val bytes = connection.getInputStream().use { it.readBytes() }
+            file.writeBytes(bytes)
+            Log.d(TAG, "downloadToLocal: saved ${bytes.size} bytes for $plantId")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "downloadToLocal: failed for $plantId", e)
+            false
+        }
+    }
+
+    fun localFileUrl(plantId: String): String? {
+        val file = File(context.filesDir, "plant_photos/$plantId.jpg")
+        return if (file.exists()) "file://${file.absolutePath}" else null
+    }
+
     suspend fun deletePhoto(plantId: String) {
         try {
             bucket.delete(listOf("user_plants/$plantId.jpg"))

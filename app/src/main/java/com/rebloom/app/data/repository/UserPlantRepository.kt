@@ -14,8 +14,12 @@ import com.rebloom.app.data.remote.UserPlantRemoteDataSource
 import com.rebloom.app.data.remote.SyncPlantsWorker
 import com.rebloom.app.domain.model.Plant
 import io.github.jan.supabase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 
@@ -29,10 +33,22 @@ class UserPlantRepository(private val context: Context) {
     private val auth get() = RebloomApp.supabase.auth
 
     fun observePlants(): Flow<List<Plant>> =
-        dao.observeAll().map { list -> list.map { it.toDomain() } }
+        dao.observeAll().map { list ->
+            list.map { entity ->
+                val localUrl = storage.localFileUrl(entity.id)
+                val domain = entity.toDomain()
+                if (localUrl != null) domain.copy(imageUrl = localUrl) else domain
+            }
+        }
 
     fun observePlantById(id: String): Flow<Plant?> =
-        dao.observeById(id).map { it?.toDomain() }
+        dao.observeById(id).map { entity ->
+            entity?.let {
+                val localUrl = storage.localFileUrl(it.id)
+                val domain = it.toDomain()
+                if (localUrl != null) domain.copy(imageUrl = localUrl) else domain
+            }
+        }
 
     suspend fun addPlant(
         nickname: String,
@@ -116,7 +132,6 @@ class UserPlantRepository(private val context: Context) {
             if (supabaseUrl != null) {
                 val withRemote = entity.copy(customImageUrl = supabaseUrl, isSynced = false)
                 dao.upsert(withRemote)
-                if (localUrl != null) storage.deleteLocalPhoto(entity.id)
                 syncToRemote(withRemote)
                 Log.d(TAG, "uploadPhotoAndSync: remote sync done")
             }
@@ -140,7 +155,6 @@ class UserPlantRepository(private val context: Context) {
                     if (supabaseUrl != null) {
                         val updated = entity.copy(customImageUrl = supabaseUrl, isSynced = false)
                         dao.upsert(updated)
-                        storage.deleteLocalPhoto(entity.id)
                         updated
                     } else {
                         allSynced = false
@@ -175,5 +189,13 @@ class UserPlantRepository(private val context: Context) {
         val unsyncedIds = dao.getUnsynced().map { it.id }.toSet()
         val toUpsert = dtos.map { it.toEntity() }.filter { it.id !in unsyncedIds }
         dao.upsertAll(toUpsert)
+        // Download images locally in background for offline access
+        val downloadScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        toUpsert.forEach { entity ->
+            val url = entity.customImageUrl ?: return@forEach
+            if (!url.startsWith("http")) return@forEach
+            if (storage.localFileUrl(entity.id) != null) return@forEach
+            downloadScope.launch { storage.downloadToLocal(url, entity.id) }
+        }
     }
 }

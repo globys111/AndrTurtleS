@@ -100,7 +100,9 @@ fun CalendarAndTasksCard(
     onSelectDate: (LocalDate) -> Unit,
     tasks: List<TaskOccurrence>,
     plantById: (String) -> Plant?,
-    emptyText: String
+    emptyText: String,
+    completedIds: Set<String> = emptySet(),
+    onToggle: (TaskOccurrence) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -147,10 +149,12 @@ fun CalendarAndTasksCard(
             Column(verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.padding(horizontal = 16.dp)) {
                 tasks.take(3).forEach { t ->
+                    val isCompleted = completedIds.contains(t.completionKey)
                     TaskRow(
                         task = t,
                         plant = plantById(t.plantId),
-                        badgeText = if (!t.isCompleted && t.status == TaskStatus.TODAY) stringResource(R.string.today_badge) else null
+                        isCompleted = isCompleted,
+                        onToggle = { onToggle(t) }
                     )
                 }
             }
@@ -199,7 +203,8 @@ private fun DayChip(
 private fun TaskRow(
     task: TaskOccurrence,
     plant: Plant?,
-    badgeText: String?
+    isCompleted: Boolean,
+    onToggle: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -211,31 +216,13 @@ private fun TaskRow(
             modifier = Modifier.size(75.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            Box(
+            Image(
+                painter = painterResource(taskIconRes(task.type, task.status, isCompleted)),
+                contentDescription = null,
                 modifier = Modifier
                     .size(55.dp)
                     .padding(start = 10.dp)
-            ) {
-                Image(
-                    painter = painterResource(taskIconRes(task.type, task.status, task.isCompleted)),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
-                )
-
-                if (badgeText != null) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .offset(y = (-2).dp)
-                            .size(width = 42.dp, height = 13.dp)
-                            .clip(RoundedCornerShape(999.dp))
-                            .background(Color.Black),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = badgeText, fontSize = 10.sp, color = Color.White)
-                    }
-                }
-            }
+            )
         }
 
         val title = stringResource(taskTypeTitleRes(task.type))
@@ -246,11 +233,7 @@ private fun TaskRow(
             Text(text = subtitle, fontSize = 14.sp)
         }
 
-        val checkRes = if (task.isCompleted) {
-            R.drawable.ic_check_box_checked
-        } else {
-            R.drawable.ic_check_box_not_checked
-        }
+        val checkRes = if (isCompleted) R.drawable.ic_check_box_checked else R.drawable.ic_check_box_not_checked
 
         Image(
             painter = painterResource(checkRes),
@@ -258,6 +241,7 @@ private fun TaskRow(
             modifier = Modifier
                 .size(44.dp)
                 .padding(10.dp)
+                .clickable { onToggle() }
         )
     }
 }
@@ -312,7 +296,8 @@ fun PlantsSection(
     title: String,
     plants: List<Plant>,
     topTasksForPlant: (String) -> List<TaskOccurrence>,
-    onPlantClick: (Plant) -> Unit
+    onPlantClick: (Plant) -> Unit,
+    completedIds: Set<String> = emptySet()
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -332,6 +317,7 @@ fun PlantsSection(
                 PlantCard(
                     plant = plant,
                     tasks = topTasksForPlant(plant.id),
+                    completedIds = completedIds,
                     onClick = { onPlantClick(plant) }
                 )
             }
@@ -343,6 +329,7 @@ fun PlantsSection(
 private fun PlantCard(
     plant: Plant,
     tasks: List<TaskOccurrence>,
+    completedIds: Set<String>,
     onClick: () -> Unit
 ) {
     Row(
@@ -389,27 +376,12 @@ private fun PlantCard(
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 tasks.take(3).forEach { t ->
-                    Box(modifier = Modifier.size(55.dp)) {
-                        Image(
-                            painter = painterResource(taskIconRes(t.type, t.status, t.isCompleted)),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
-                        )
-
-                        if (!t.isCompleted && t.status == TaskStatus.TODAY) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .offset(y = (-2).dp)
-                                    .size(width = 42.dp, height = 13.dp)
-                                    .clip(RoundedCornerShape(999.dp))
-                                    .background(HomeCounterTasks),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = stringResource(R.string.today_badge), fontSize = 10.sp, color = Color.White)
-                            }
-                        }
-                    }
+                    val isCompleted = completedIds.contains(t.completionKey)
+                    Image(
+                        painter = painterResource(taskIconRes(t.type, t.status, isCompleted)),
+                        contentDescription = null,
+                        modifier = Modifier.size(55.dp)
+                    )
                 }
             }
         }
@@ -420,7 +392,7 @@ private fun PlantCard(
 fun LoadingState() {
     Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = HomeFramePicture)
             Spacer(modifier = Modifier.height(dimensionResource(R.dimen.block_gap)))
             Text(text = stringResource(R.string.loading_home))
         }

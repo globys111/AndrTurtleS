@@ -1,16 +1,21 @@
 package com.rebloom.app.ui.screens.home
 
 import android.app.Application
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.rebloom.app.data.local.TaskCompletionStore
 import com.rebloom.app.data.repository.UserPlantRepository
+import com.rebloom.app.domain.model.TaskOccurrence
+import com.rebloom.app.domain.usecase.TaskScheduler
 import com.rebloom.app.ui.common.UiState
+import com.rebloom.app.ui.screens.widget.MascotWidgetReceiver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import com.rebloom.app.domain.usecase.TaskScheduler
 
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -18,6 +23,11 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _state = MutableStateFlow<UiState<HomeData>>(UiState.Loading)
     val state: StateFlow<UiState<HomeData>> = _state
+
+    val completedIds: StateFlow<Set<String>> = TaskCompletionStore.completedIds
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
     init {
         viewModelScope.launch { load() }
@@ -60,10 +70,55 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            try {
+                plantRepo.syncFromRemote()
+                val plants = plantRepo.observePlants().first()
+                val current = _state.value
+                if (current is UiState.Success) {
+                    val today = LocalDate.now()
+                    val defs = TaskScheduler.generateWateringDefinitions(plants, today)
+                    val occurrences = TaskScheduler.generateOccurrences(defs, today)
+                    _state.value = UiState.Success(
+                        current.data.copy(plants = plants, allOccurrences = occurrences)
+                    )
+                } else {
+                    load()
+                }
+            } catch (_: Exception) {
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
+    }
+
     fun selectDate(date: LocalDate) {
         val current = _state.value
         if (current is UiState.Success) {
             _state.value = UiState.Success(current.data.copy(selectedDate = date))
         }
+    }
+
+    fun toggleTaskCompletion(task: TaskOccurrence) {
+        TaskCompletionStore.toggle(task.completionKey)
+        updateTodayCounts()
+        updateWidget()
+    }
+
+    private fun updateTodayCounts() {
+        val s = _state.value as? UiState.Success ?: return
+        val today = LocalDate.now()
+        val todayTasks = TaskScheduler.tasksForDate(s.data.allOccurrences, today)
+        val completed = todayTasks.count { TaskCompletionStore.completedIds.value.contains(it.completionKey) }
+        TaskCompletionStore.saveTodayCounts(completed, todayTasks.size)
+    }
+
+    private fun updateWidget() {
+        val ctx = getApplication<Application>().applicationContext
+        val mgr = AppWidgetManager.getInstance(ctx)
+        val ids = mgr.getAppWidgetIds(ComponentName(ctx, MascotWidgetReceiver::class.java))
+        ids.forEach { MascotWidgetReceiver.updateWidget(ctx, mgr, it) }
     }
 }
