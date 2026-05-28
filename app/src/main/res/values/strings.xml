@@ -115,8 +115,6 @@
     <string name="error_password_too_short">Пароль должен содержать минимум 6 символов</string>
     <string name="error_password_mismatch">Пароли не совпадают</string>
     <string name="error_login_failed">Неверный email или пароль</string>
-    <string name="error_test_data_hint">Тестовые данные:\ntest@mail.com\n123456</string>
-
     <string name="success_login">Вход выполнен успешно!</string>
     <string name="success_register">Регистрация успешна!</string>
 

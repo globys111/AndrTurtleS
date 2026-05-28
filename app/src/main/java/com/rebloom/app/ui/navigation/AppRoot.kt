@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.rebloom.app.ui.theme.HomeCounterTasks
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -107,6 +108,9 @@ fun AppRoot(deepLinkUri: Uri? = null,
                                 }
                             },
                             modifier = Modifier.padding(horizontal = 0.dp),
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = HomeCounterTasks
+                            ),
                             label = {
                                 Text(
                                     text = stringResource(item.labelRes),

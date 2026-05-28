@@ -205,29 +205,31 @@ fun PlantDetailsScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(28.dp))
+                if (false) {
+                    Spacer(modifier = Modifier.height(28.dp))
 
-                CareTaskItem(
-                    icon = Icons.Filled.WbSunny,
-                    title = "Освещение",
-                    plantName = "${plant.name} (${plant.type})",
-                    borderWidth = 1.5.dp,
-                    iconColor = colorResource(R.color.text_primary),
-                    borderColor = colorResource(R.color.text_primary),
-                    showTodayBadge = false
-                )
+                    CareTaskItem(
+                        icon = Icons.Filled.WbSunny,
+                        title = "Освещение",
+                        plantName = "${plant.name} (${plant.type})",
+                        borderWidth = 1.5.dp,
+                        iconColor = colorResource(R.color.text_primary),
+                        borderColor = colorResource(R.color.text_primary),
+                        showTodayBadge = false
+                    )
 
-                Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
-                CareTaskItem(
-                    icon = Icons.Outlined.LocalFlorist,
-                    title = "Пересадка",
-                    plantName = "${plant.name} (${plant.type})",
-                    borderWidth = 3.dp,
-                    iconColor = colorResource(R.color.light_green),
-                    borderColor = colorResource(R.color.light_green),
-                    showTodayBadge = true
-                )
+                    CareTaskItem(
+                        icon = Icons.Outlined.LocalFlorist,
+                        title = "Пересадка",
+                        plantName = "${plant.name} (${plant.type})",
+                        borderWidth = 3.dp,
+                        iconColor = colorResource(R.color.light_green),
+                        borderColor = colorResource(R.color.light_green),
+                        showTodayBadge = true
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(28.dp))
 
