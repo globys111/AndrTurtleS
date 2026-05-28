@@ -218,56 +218,6 @@ fun RegisterScreen(
                 color = Color.Gray,
                 modifier = Modifier.clickable { onNavigateToLogin() }
             )
-
-            Box(
-                modifier = Modifier
-                    .padding(top = 40.dp)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Divider(color = Color.LightGray, thickness = 1.dp)
-                Text(
-                    text = stringResource(R.string.auth_or_register_with),
-                    color = Color.Gray,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(horizontal = 8.dp)
-                )
-            }
-
-            Row(
-                modifier = Modifier.padding(top = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                SocialIcon(R.drawable.ic_vk, stringResource(R.string.auth_social_vk))
-                SocialIcon(R.drawable.ic_google, stringResource(R.string.auth_social_google))
-                SocialIcon(R.drawable.ic_more, stringResource(R.string.auth_social_more))
-            }
-        }
-    }
-}
-
-@Composable
-fun SocialIcon(iconRes: Int, contentDescription: String) {
-    val context = LocalContext.current
-    Surface(
-        shape = CircleShape,
-        color = Color(0xFFE2E6D5),
-        modifier = Modifier
-            .size(56.dp)
-            .clickable {
-                Toast.makeText(context, contentDescription, Toast.LENGTH_SHORT).show()
-            }
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Icon(
-                painter = painterResource(id = iconRes),
-                contentDescription = contentDescription,
-                modifier = Modifier.size(24.dp),
-                tint = Color.Unspecified
-            )
         }
     }
 }

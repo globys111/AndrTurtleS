@@ -2,8 +2,6 @@ package com.rebloom.app.data.mapper
 
 import com.rebloom.app.data.dto.TaskDto
 import com.rebloom.app.data.dto.UserDto
-import com.rebloom.app.data.dto.ArticleDto
-import com.rebloom.app.data.dto.PostDto
 import com.rebloom.app.data.dto.UserPlantDto
 import com.rebloom.app.data.dto.UserPlantWithCacheDto
 import com.rebloom.app.data.local.UserPlantEntity
@@ -68,21 +66,3 @@ fun TaskDto.toDomain(): TaskDefinition {
         completedDates = completedDates.map(LocalDate::parse).toSet()
     )
 }
-
-fun ArticleDto.toDomain(): Article = Article(
-    id = id,
-    title = title,
-    content = content,
-    imageName = imageName,
-    rating = rating,
-    author = author
-)
-
-fun PostDto.toDomain(): Post = Post(
-    id = id,
-    userName = userName,
-    avatar = avatar,
-    text = text,
-    imageName = imageName,
-    replies = replies?.map { it.toDomain() } ?: emptyList()
-)

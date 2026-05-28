@@ -14,8 +14,6 @@ sealed class MainDestinations(val route: String) {
     data object Home          : MainDestinations("${MAIN_ROUTE}_home")
     data object Tasks         : MainDestinations("${MAIN_ROUTE}_tasks")
     data object Plants        : MainDestinations("${MAIN_ROUTE}_plants")
-    data object Articles      : MainDestinations("${MAIN_ROUTE}_articles")
-    data object Community     : MainDestinations("${MAIN_ROUTE}_community")
     data object Profile       : MainDestinations("${MAIN_ROUTE}_profile")
     data object PlantDetails  : MainDestinations("${MAIN_ROUTE}_plant_details")
     data object ArticleDetails: MainDestinations("${MAIN_ROUTE}_article_details")

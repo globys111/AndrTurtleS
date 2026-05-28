@@ -84,8 +84,7 @@ fun HomeScreen(
                             greetingText = greeting,
                             hasNewNotifications = true,
                             avatarUrl = profileState.avatarUrl,
-                            onProfileClick = onOpenProfile,
-                            onNotificationsClick = { /* позже */ }
+                            onProfileClick = onOpenProfile
                         )
                     }
 

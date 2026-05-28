@@ -203,17 +203,6 @@ fun PlantDetailsScreen(
                             color = colorResource(R.color.text_primary).copy(alpha = 0.6f)
                         )
                     )
-
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = "Настройки",
-                            tint = colorResource(R.color.text_primary).copy(alpha = 0.6f)
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(28.dp))
