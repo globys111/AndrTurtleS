@@ -1,3 +1,139 @@
 <resources>
-    <string name="app_name">Plant_App_AndrTurtleS</string>
+    <string name="app_name">Rebloom</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_day">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_night">Доброй ночи</string>
+
+    <!-- Bottom navigation -->
+    <string name="tasks_title">Задачи</string>
+    <string name="plants_title">Растения</string>
+    <string name="home_title">Главная</string>
+    <string name="articles_title">Статьи</string>
+    <string name="community_title">Сообщество</string>
+
+    <!-- Home -->
+    <string name="no_tasks">На этот день задач нет</string>
+    <string name="today_badge">Сегодня</string>
+    <string name="done_tasks_subtitle">задач выполнено</string>
+    <string name="today_word">сегодня</string>
+
+    <!-- Task types -->
+    <string name="task_water">Полив</string>
+    <string name="task_repot">Пересадка</string>
+    <string name="task_light">Освещение</string>
+
+    <!-- Common states -->
+    <string name="loading">Загрузка…</string>
+    <string name="error_title">Что-то пошло не так</string>
+    <string name="retry">Повторить</string>
+
+    <!-- Profile -->
+    <string name="profile_edit">Редактировать профиль</string>
+
+    <string name="section_general">Общие параметры</string>
+    <string name="section_system">Системные параметры</string>
+    <string name="section_more">Дополнительная информация</string>
+
+    <string name="action_account">Аккаунт</string>
+    <string name="action_notifications">Уведомления</string>
+    <string name="action_privacy">Приватность</string>
+
+    <string name="action_language">Язык</string>
+    <string name="action_theme">Тема</string>
+    <string name="action_permissions">Разрешения</string>
+
+    <string name="action_reviews">Отзывы</string>
+    <string name="action_faq">Частые вопросы</string>
+    <string name="action_policy">Политика использования</string>
+
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="delete_account">Удалить аккаунт</string>
+
+    <string name="plant_details_title">О растении</string>
+
+    <string name="search_hint">Поиск растений...</string>
+    <string name="loading_plants">Загружаем растения...</string>
+    <string name="no_plants">Нет растений</string>
+    <string name="no_plants_found">Растения не найдены</string>
+    <string name="add_plant">Добавить растение</string>
+    <string name="plants">растения</string>
+    <string name="filter_button">Фильтр</string>
+    <string name="edit_button">Редактировать</string>
+
+    <string name="view_care">Уход</string>
+    <string name="view_description">Описание</string>
+
+    <string name="recently_planted">Недавно посажено</string>
+    <string name="one_month">1 месяц</string>
+    <string name="months_2_to_4">%d месяца</string>
+    <string name="months_5_to_11">%d месяцев</string>
+    <string name="one_year">1 год</string>
+    <string name="years_2_to_4">%d года</string>
+    <string name="years_more_than_1">%d лет</string>
+    <string name="unknown_age">Неизвестный возраст</string>
+
+    <string name="no_articles">Нет статей</string>
+    <string name="error_loading">Ошибка загрузки</string>
+    <string name="search_articles">Поиск...</string>
+    <string name="article_author">Автор: %s</string>
+    <string name="article_rating">Рейтинг: %.1f</string>
+    <string name="loading_posts">Загружаем публикации...</string>
+    <string name="no_posts">Нет публикаций</string>
+
+    <string name="loading_home">Загружаем главный экран...</string>
+    <string name="loading_articles">Загружаем статьи...</string>
+    <string name="loading_tasks">Загружаем задачи...</string>
+
+    <!-- Auth -->
+    <string name="auth_login_title">Вход</string>
+    <string name="auth_login_subtitle">Войдите в свой аккаунт</string>
+    <string name="auth_email">Электронная почта</string>
+    <string name="auth_password">Пароль</string>
+    <string name="auth_forgot_password">Забыли пароль?</string>
+    <string name="auth_login_button">Войти</string>
+    <string name="auth_no_account">Нет аккаунта?</string>
+    <string name="auth_register_button">Зарегистрироваться</string>
+    <string name="auth_or_login_with">или войти с помощью</string>
+    <string name="auth_social_vk">Вход через ВКонтакте</string>
+    <string name="auth_social_google">Вход через Google</string>
+    <string name="auth_social_more">Другие способы</string>
+
+    <string name="auth_register_title">Регистрация</string>
+    <string name="auth_register_subtitle">Создайте аккаунт</string>
+    <string name="auth_confirm_password">Повторить пароль</string>
+    <string name="auth_register_button_text">Зарегистрироваться</string>
+    <string name="auth_have_account">Есть аккаунт?</string>
+    <string name="auth_sign_in_button">Войти</string>
+    <string name="auth_or_register_with">или зарегистрироваться с помощью</string>
+
+    <string name="error_email_empty">Введите email</string>
+    <string name="error_email_invalid">Введите корректный email</string>
+    <string name="error_password_empty">Введите пароль</string>
+    <string name="error_password_too_short">Пароль должен содержать минимум 6 символов</string>
+    <string name="error_password_mismatch">Пароли не совпадают</string>
+    <string name="error_login_failed">Неверный email или пароль</string>
+    <string name="success_login">Вход выполнен успешно!</string>
+    <string name="success_register">Регистрация успешна!</string>
+
+    <string name="social_vk">VK</string>
+    <string name="social_google">Google</string>
+    <string name="social_more">Еще</string>
+
+    <string name="hide_password">Скрыть пароль</string>
+    <string name="show_password">Показать пароль</string>
+
+    <string name="forgot_password_title">Восстановление пароля</string>
+    <string name="forgot_password_subtitle">Введите ваш email, и мы отправим инструкции по восстановлению</string>
+    <string name="forgot_password_email">Email</string>
+    <string name="forgot_password_button">Отправить</string>
+    <string name="forgot_password_back_to_login">Вернуться ко входу</string>
+    <string name="forgot_password_success">Инструкции по восстановлению отправлены на вашу почту</string>
+    <string name="forgot_password_error_email_empty">Введите email</string>
+    <string name="forgot_password_error_email_invalid">Введите корректный email</string>
+
+    <!-- Widget -->
+    <string name="widget">Выполнено: %1$d/%2$d</string>
 </resources>
